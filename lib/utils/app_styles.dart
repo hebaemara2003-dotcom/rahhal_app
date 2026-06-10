@@ -56,6 +56,16 @@ class AppStyles {
       fontSize: 16 ,
       fontWeight:FontWeight.w400
   );
+  static TextStyle regular16MainColor = GoogleFonts.cairo(
+      color: AppColors.mainColor,
+      fontSize: 16 ,
+      fontWeight:FontWeight.w400
+  );
+  static TextStyle regular16cyanColor = GoogleFonts.cairo(
+      color: AppColors.cyanColor,
+      fontSize: 16 ,
+      fontWeight:FontWeight.w400
+  );
   static TextStyle regular16NavyBlueColor = GoogleFonts.cairo(
       color: AppColors.navyBlueColor,
       fontSize: 16 ,
@@ -86,4 +96,34 @@ class AppStyles {
       fontSize: 12 ,
       fontWeight:FontWeight.w400
   );
+  static TextStyle nunito20Black = GoogleFonts.nunito(
+      color: AppColors.blackColor,
+      fontSize: 20 ,
+      fontWeight:FontWeight.w800
+  );
+  static TextStyle nunito24Black = GoogleFonts.nunito(
+      color: AppColors.blackColor,
+      fontSize: 24 ,
+      fontWeight:FontWeight.w800
+  );
+  static TextStyle nunito16Black = GoogleFonts.nunito(
+      color: AppColors.blackColor,
+      fontSize: 16 ,
+      fontWeight:FontWeight.w800
+  );
+  static TextStyle nunito16White = GoogleFonts.nunito(
+      color: AppColors.whiteColor,
+      fontSize: 16 ,
+      fontWeight:FontWeight.w700
+  );
+  static TextStyle nunito16Main = GoogleFonts.nunito(
+      color: AppColors.mainColor,
+      fontSize: 16 ,
+      fontWeight:FontWeight.w700
+  );
+  static TextStyle nunito20White = GoogleFonts.cairo(
+      color: AppColors.whiteColor,
+      fontSize: 20 ,
+  );
+
 }

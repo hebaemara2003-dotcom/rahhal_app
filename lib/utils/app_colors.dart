@@ -3,11 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color SelectcontrolBoarding = Color(0xff007BB9);
-  static const Color UnSelectcontrolBoarding = Color(0xffD1D5DC);
   static const Color mainColor = Color(0xff33B6FF);
   static const Color redColor = Color(0xffFF3232);
   static const Color lightMainColor = Color(0xff005DC2);
+  static const Color darkMainColor = Color(0xff01428C);
   static const Color cyanColor2 = Color(0xff00A9D2);
   static const Color blackColor = Color(0xff000000);
   static const Color whiteColor = Color(0xffFFFFFF);
@@ -22,6 +21,9 @@ class AppColors {
   static const Color reGrayColor = Color(0xff8B8E92);
   static const Color cyanColor = Color(0xff007AB6);
   static const Color transparentColor = Colors.transparent;
+  static const Color lightColor = Color(0xffE6F1F8);
+
+
 
 
 

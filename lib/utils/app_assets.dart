@@ -15,4 +15,6 @@ class AppAssets {
       'assets/images/reset_image.png' ;
   static const String registerScreenImage =
       'assets/images/registerScreenImage.png' ;
+  static const String homeScreenImage =
+      'assets/images/home_screen_image.png' ;
 }

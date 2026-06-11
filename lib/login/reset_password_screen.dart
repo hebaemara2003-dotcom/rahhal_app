@@ -32,7 +32,8 @@ class ResetPasswordScreen extends StatelessWidget {
                 Text("Back to Sign In",
                   style: AppStyles.regular16LightGrayColor,)
               ],
-            ),),
+            ),
+            ),
             Expanded(
               child: Stack(
                 children: [

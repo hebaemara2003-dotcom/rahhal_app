@@ -9,12 +9,13 @@ typedef OnValidator = String? Function(String?)?;
 class CustomTextFeild extends StatelessWidget {
   bool? filled;
   Color? fillColor;
-  Color borderColor;
+  Color ?borderColor;
   Widget? prefixIcon;
   Widget? suffixIcon;
   String? hintText;
   TextStyle? hintStyle;
   int? maxLines;
+  int ? raduis;
   TextEditingController? controller;
 
   OnChanged onChanged;
@@ -24,7 +25,7 @@ class CustomTextFeild extends StatelessWidget {
 
   CustomTextFeild({
     super.key, this.filled, this.fillColor,
-    required this.borderColor, this.prefixIcon,
+     this.borderColor, this.prefixIcon,
     this.suffixIcon, this.hintText,
     this.hintStyle,
     this.maxLines, this.controller,
@@ -41,7 +42,7 @@ class CustomTextFeild extends StatelessWidget {
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(horizontal: 12,vertical: 5),
         enabledBorder: buildDecorationBorder(
-          radius:14,
+          radius:80,
           borderColor: borderColor,
         ),
         focusedBorder: buildDecorationBorder(

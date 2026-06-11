@@ -36,6 +36,11 @@ class AppStyles {
       fontSize: 15 ,
       fontWeight:FontWeight.w400
   );
+  static TextStyle regular15BlackColor = GoogleFonts.cairo(
+      color: AppColors.blackColor,
+      fontSize: 15 ,
+      fontWeight:FontWeight.w400
+  );
   static TextStyle regular18WhiteColor = GoogleFonts.cairo(
       color: AppColors.whiteColor,
       fontSize: 18 ,
@@ -81,9 +86,18 @@ class AppStyles {
       fontSize: 13 ,
       fontWeight:FontWeight.w400
   );
+  static TextStyle regular13BlackColor = GoogleFonts.cairo(
+      color: AppColors.blackColor,
+      fontSize: 13 ,
+      fontWeight:FontWeight.w400
+  );
   static TextStyle regular12DarkGrayColor = GoogleFonts.cairo(
       color: AppColors.darkGrayColor,
       fontSize: 13 ,
+      fontWeight:FontWeight.w400
+  );
+  static TextStyle regular16 = GoogleFonts.cairo(
+      fontSize: 16 ,
       fontWeight:FontWeight.w400
   );
   static TextStyle regular12MainGrayColor = GoogleFonts.plusJakartaSans(
@@ -96,6 +110,7 @@ class AppStyles {
       fontSize: 12 ,
       fontWeight:FontWeight.w400
   );
+
   static TextStyle nunito20Black = GoogleFonts.nunito(
       color: AppColors.blackColor,
       fontSize: 20 ,
@@ -124,6 +139,14 @@ class AppStyles {
   static TextStyle nunito20White = GoogleFonts.cairo(
       color: AppColors.whiteColor,
       fontSize: 20 ,
+  );
+  static TextStyle sans24BlackColor= GoogleFonts.calSans(
+    color: AppColors.blackColor,
+    fontSize: 24 ,
+  );
+  static TextStyle sans24MainGrayColor= GoogleFonts.calSans(
+    color: AppColors.mainGrayColor,
+    fontSize: 12 ,
   );
 
 }

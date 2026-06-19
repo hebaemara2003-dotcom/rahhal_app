@@ -15,7 +15,7 @@ class CustomTextFeild extends StatelessWidget {
   String? hintText;
   TextStyle? hintStyle;
   int? maxLines;
-  int ? raduis;
+  double ? raduis;
   TextEditingController? controller;
 
   OnChanged onChanged;
@@ -29,7 +29,8 @@ class CustomTextFeild extends StatelessWidget {
     this.suffixIcon, this.hintText,
     this.hintStyle,
     this.maxLines, this.controller,
-    this.onChanged, this.validator
+    this.onChanged, this.validator,
+    this.raduis
   });
 
   @override

@@ -5,6 +5,10 @@ class AppRoutes {
   static const String registerRouteName = 'register_screen';
   static const String forgetPasswordRouteName = 'forget_password_screen';
   static const String profileRouteName = 'profile_screen';
+  static const String cameraRouteName = 'camera_screen';
+  static const String recognitionResultRoutName = 'recognition_result_screen';
+
+
 
 
 

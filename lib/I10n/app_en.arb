@@ -1,10 +1,18 @@
 {
-"rallah":"Rahhal",
+"rahhal":"Rahhal",
 "Your Smart Guide to Egyptian Discovery!":"Your Smart Guide to Egyptian Discovery!",
-"Easy Trip Planning":"Easy Trip Planning",
-"Plan your perfect Egyptian adventure with personalized recommendations based on your budget and interests.":"Plan your perfect Egyptian adventure with personalized recommendations based on your budget and interests.",
-"Next":"Next",
-"Image Recognition":"Image Recognition",
+"easy Trip Planning":"Easy Trip Planning",
+"plan your perfect Egyptian adventure with personalized recommendations based on your budget and interests.":"Plan your perfect Egyptian adventure with personalized recommendations based on your budget and interests.",
+"next":"Next",
+"image Recognition":"Image Recognition",
+"explore":"Explore",
+"my_trip":"My trip",
+"home" : "Home",
+"favorite" : "Favorite",
+"ai_chat" : "Ai_chat"
+
+
+
 
 
 

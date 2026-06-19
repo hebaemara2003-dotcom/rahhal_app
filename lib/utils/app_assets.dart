@@ -17,4 +17,10 @@ class AppAssets {
       'assets/images/registerScreenImage.png' ;
   static const String homeScreenImage =
       'assets/images/home_screen_image.png' ;
+  static const String tripImage =
+      'assets/images/trip_image.png' ;
+  static const String pyramidsImage =
+      'assets/images/pyramids_image.png' ;
+  static const String aboEllHoolImage =
+      'assets/images/abo_ell_hool.png' ;
 }

@@ -22,6 +22,7 @@ class AppColors {
   static const Color cyanColor = Color(0xff007AB6);
   static const Color transparentColor = Colors.transparent;
   static const Color lightColor = Color(0xffE6F1F8);
+  static const Color greenColor = Color(0xff34C759);
 
 
 

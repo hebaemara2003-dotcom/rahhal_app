@@ -11,11 +11,15 @@ class CustomButton extends StatelessWidget {
   final Color textColor;
   final BorderRadius borderRadius;
   final Icon? icon;
+  final double? width;
+  final double? height;
    CustomButton({super.key,
     this.isOutlined = false,
     this.fillColor = AppColors.lightMainColor,
     this.textColor = AppColors.whiteColor,
     this.icon,
+      this.width,
+     this.height,
     required this.child,
     required this.onPressed, required this.borderRadius,
     });
@@ -23,17 +27,16 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
+      width: width ?? double.infinity,
+      height: height ,
       child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  vertical: context.height*0.01
-                ),
+                // padding: EdgeInsets.symmetric(
+                //   vertical: context.height*0.01,
+                // ),
                 backgroundColor:fillColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: borderRadius,
-
-
                 ),
               ),
               onPressed: onPressed,

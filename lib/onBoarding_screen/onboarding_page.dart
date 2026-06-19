@@ -55,7 +55,8 @@ class OnboardingPage extends StatelessWidget {
                                 size: 15,),
 
                             ],
-                          ) )
+                          )
+                      )
                     ],
                   ),
                 ),

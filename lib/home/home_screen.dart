@@ -1,85 +1,143 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:rahhal_app/custom/custom_text_field.dart';
-import 'package:rahhal_app/profile/profile_screen.dart';
-import 'package:rahhal_app/utils/app_assets.dart';
-import 'package:rahhal_app/utils/app_colors.dart';
-import 'package:rahhal_app/utils/app_styles.dart';
-import 'package:rahhal_app/utils/screen_size.dart';
 
-class HomeScreen extends StatelessWidget {
-   const HomeScreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:rahhal_app/home/tabs/aiChat/ai_chat.dart';
+import 'package:rahhal_app/home/tabs/explore/explore_tab.dart';
+import 'package:rahhal_app/home/tabs/favourite/favoutite_tab.dart';
+import 'package:rahhal_app/home/tabs/home/home_tab.dart';
+import 'package:rahhal_app/home/tabs/myTrip/my_trip.dart';
+
+import '../I10n/app_localizations.dart';
+import '../camera/camera_screen.dart';
+import '../custom/custom_text_field.dart';
+import '../onBoarding_screen/custom_button.dart';
+import '../profile/profile_screen.dart';
+import '../utils/app_assets.dart';
+import '../utils/app_colors.dart';
+import '../utils/app_routes.dart';
+import '../utils/app_styles.dart';
+import '../utils/screen_size.dart';
+import 'item_home.dart';
+
+
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int selectedIndex = 0;
+
+  List<Widget> tabsList = [
+    HomeTab(), ExploreTab(), MyTrip(), FavoutiteTab(), AiChat(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        // alignment: AlignmentGeometry.topCenter,
-        children: [
-          Positioned(
-            top: 0,
-              right: 0,
-              left: 0,
-              child: SizedBox(
-                height: context.height*.27,
-                child: Image.asset(AppAssets.homeScreenImage,
-                  fit: BoxFit.cover,
-                 ),
-              )),
-          SafeArea(
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: context.width*0.06),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text('Hello, Traveler!',
-                      style: AppStyles.regular15BlackColor,),
-                      Spacer(),
-                      FloatingActionButton.small(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                          onPressed: (){
-                            Navigator.push(context,
-                                MaterialPageRoute(
-                                    builder: (_)=>ProfileScreen()));
-                          },
-                      child: Icon(Icons.person_2_outlined,size: 25,
-                      color: AppColors.cyanColor,),)
-
-                    ],
-                  ),
-                  Text("Where do you\n want to go?",
-                  style: AppStyles.sans24BlackColor,),
-                  SizedBox(height: context.height*0.01,),
-                  Text("Discover Egypt your way",
-                    style: AppStyles.regular13BlackColor,),
-                  SizedBox(height: context.height*0.033,),
-                  CustomTextFeild(
-                    filled: true,
-                    fillColor: AppColors.whiteColor,
-                    borderColor: AppColors.borderColor,
-
-                    hintText: 'Search for Places.......',
-                    hintStyle: AppStyles.regular16LightGrayColor,
-                    prefixIcon: Icon(
-                      Icons.search_outlined,
-                      color: AppColors.mainGrayColor,
-                      size: 25,
-                    ),
-                    suffixIcon: Icon(
-                        Icons.camera_alt_rounded,
-                      color: AppColors.lightMainColor,
-                      size: 25,),
-                  ),
-
-
-                ],
-              ),
-            ),
-          )
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: selectedIndex,
+        onTap: (index) {
+          setState(() {
+            selectedIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            activeIcon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore_outlined),
+            activeIcon: Icon(Icons.explore),
+            label: "Explore",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.card_travel_outlined),
+            activeIcon: Icon(Icons.card_travel),
+            label: "Trip",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite_border_outlined),
+            activeIcon: Icon(Icons.favorite),
+            label: "Favorite",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_outlined),
+            activeIcon: Icon(Icons.chat),
+            label: "Chat",
+          ),
         ],
       ),
+      body: tabsList[selectedIndex],
+
     );
   }
+
 }
+// bottomNavigationBar: BottomNavigationBar(
+//   backgroundColor: Colors.black,
+//     type: BottomNavigationBarType.fixed,
+//     currentIndex: selectedIndex,
+//     onTap: (index) {
+//       selectedIndex = index;
+//       setState(() {
+//
+//       });
+//     },
+//     items: [
+//       buildBottomNavigationBarItem(
+//         index: 0,
+//         unSelectedIcon: Icon(Icons.home_outlined),
+//         selectedIcon: Icon(Icons.home),
+//         lable: "home",
+//       ),
+//       buildBottomNavigationBarItem(
+//           index: 1,
+//           unSelectedIcon: Icon(Icons.explore_outlined),
+//           selectedIcon: Icon(Icons.explore),
+//           lable: "explore"
+//       ),
+//       // buildBottomNavigationBarItem(
+//       //     index: 2,
+//       //     unSelectedIcon: Icon(Icons.card_travel_outlined),
+//       //     selectedIcon: Icon(Icons.card_travel),
+//       //     lable: "My trip"
+//       // ),
+//       // buildBottomNavigationBarItem(
+//       //     index: 3,
+//       //     unSelectedIcon: Icon(Icons.favorite_border_outlined),
+//       //     selectedIcon: Icon(Icons.favorite),
+//       //     lable: "favorite"
+//       // ),
+//       // buildBottomNavigationBarItem(
+//       //     index: 4,
+//       //     unSelectedIcon: Icon(Icons.chat_rounded),
+//       //     selectedIcon: Icon(Icons.chat_rounded),
+//       //     lable: "Ai Chat"
+//       // ),
+//
+//     ]
+// ),
+//    body: tabsList[selectedIndex],
+//  );
+// }
+
+//   BottomNavigationBarItem buildBottomNavigationBarItem({
+//     required Widget selectedIcon, required Widget unSelectedIcon,
+//     required String lable, required int index
+//   }) {
+//     return BottomNavigationBarItem(icon: selectedIndex == index ?
+//     selectedIcon : unSelectedIcon,
+//         label: lable);
+//   }
+// }
+
+
+
+
+

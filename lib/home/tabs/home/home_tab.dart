@@ -88,6 +88,7 @@ class HomeTab extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: context.height*0.02,),
           Stack(
             children: [
               SizedBox(

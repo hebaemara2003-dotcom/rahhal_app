@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
 
   List<Widget> tabsList = [
-    HomeTab(), ExploreTab(), MyTrip(), FavoutiteTab(), AiChat(),
+    HomeTab(), ExploreTap(), MyTrip(), FavoutiteTab(), AiChat(),
   ];
 
   @override

@@ -8,13 +8,31 @@ import 'package:rahhal_app/utils/app_assets.dart';
 import 'package:rahhal_app/utils/app_colors.dart';
 import 'package:rahhal_app/utils/app_styles.dart';
 import 'package:rahhal_app/utils/screen_size.dart';
-
+import 'dart:convert';
+import '../utils/token_storage.dart';
+import '../api/auth_api.dart';
+import '../api/reset_api.dart';
 import '../utils/app_routes.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController =
+  TextEditingController();
+  final TextEditingController passwordController =
+  TextEditingController();
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
@@ -43,6 +61,7 @@ class LoginScreen extends StatelessWidget {
                     Text("Email",
                       style: AppStyles.nunito16Black,),
                     CustomTextFeild(
+                      controller: emailController,
                       filled: true,
                       prefixIcon: Icon(Icons.email_outlined,
                         color: AppColors.lightGrayColor,),
@@ -55,6 +74,7 @@ class LoginScreen extends StatelessWidget {
                 Text('Password',
                 style: AppStyles.nunito16Black,),
                 CustomTextFeild(
+                  controller: passwordController,
                   filled: true,
                   fillColor: AppColors.borderColor,
                   borderColor: AppColors.borderColor,
@@ -68,11 +88,29 @@ class LoginScreen extends StatelessWidget {
                 ),
                     SizedBox(height: context.height*0.01,),
                     InkWell(
-                      onTap: () {
-                        Navigator.pushReplacement(context,
+                      onTap: ()  async {
+                        print("forget password");
+
+              var response = await forgotPassword(
+              email: emailController.text,
+              );
+
+                        if (response.statusCode == 200) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Check your email for the reset link"),
+                            ),
+                          );
+
+                          Navigator.push(
+                            context,
                             MaterialPageRoute(
-                                builder: (_)=> ResetPasswordScreen()));
-                      },
+                              builder: (_) => ResetPasswordScreen(),
+                            ),
+                          );
+                        }
+
+              },
                       child: Text(
                         'Forget Password?',
                         textAlign: TextAlign.right,
@@ -85,10 +123,34 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ),
                     CustomButton(
-                        onPressed: (){
-                          Navigator.pushReplacement(context,
+                        onPressed: () async {
+                          var response = await login(
+                            email: emailController.text,
+                            password: passwordController.text,
+                          );
+
+
+
+                          if (response.statusCode == 200) {
+                            final data = jsonDecode(response.body);
+
+                            String token = data["data"]["token"];
+
+                            await TokenStorage.saveToken(token);
+
+                            Navigator.pushReplacement(
+                              context,
                               MaterialPageRoute(
-                                  builder: (_)=> HomeScreen()));
+                                builder: (_) => const HomeScreen(),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Login Failed"),
+                              ),
+                            );
+                          }
                         },
                          borderRadius: BorderRadius.circular(16),
                         child: Text('Sign In',

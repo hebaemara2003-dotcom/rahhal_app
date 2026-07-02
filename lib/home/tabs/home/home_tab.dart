@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:rahhal_app/api/top_rated_places_api.dart';
+import 'package:rahhal_app/home/tabs/explore/explore_tab.dart';
+import '../../../api/popular_trip_api.dart';
 import '../../../camera/camera_screen.dart';
 import '../../../custom/custom_text_field.dart';
 import '../../../onBoarding_screen/custom_button.dart';
@@ -9,10 +12,32 @@ import '../../../utils/app_colors.dart';
 import '../../../utils/app_styles.dart';
 import '../../../utils/screen_size.dart';
 import '../../item_home.dart';
+import '../explore/explor_data.dart';
+import '../explore/explor_widget.dart';
 
-class HomeTab extends StatelessWidget {
+class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
 
+  @override
+  State<HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<HomeTab> {
+  List trips =[];
+  List places =[];
+  @override
+  void initState() {
+    super.initState();
+    loadTrips();
+  }
+
+  Future<void> loadTrips() async {
+    trips = await getPopularTrips();
+    places = await getTopRatedPlaces();
+    print(places);
+
+    setState(() {});
+  }
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -59,29 +84,40 @@ class HomeTab extends StatelessWidget {
                         Text("Discover Egypt your way",
                           style: AppStyles.regular13BlackColor,),
                         SizedBox(height: context.height*0.065,),
-                        CustomTextFeild(
-                          filled: true,
-                          fillColor: AppColors.whiteColor,
-                          borderColor: AppColors.borderColor,
+                        CustomButton(
+                            onPressed: (){
+                              Navigator.push(context,
+                                  MaterialPageRoute(
+                                      builder: (_)=>ExploreTap()));
+                            },
+                            borderRadius: BorderRadius.circular(40),
+                            fillColor: AppColors.whiteColor,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.search_outlined,
+                                  color: AppColors.mainGrayColor,
+                                  size: 25,
+                                ),
+                                Text("Search for places",
+                                  style:AppStyles.sans24MainGrayColor ,),
+                                Spacer(),
+                                IconButton(
+                                    onPressed: (){
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (_)=>CameraScreen()));
+                                            },
+                                    icon: Icon(Icons.camera_alt_rounded,
+                                      color: AppColors.lightMainColor,
+                                              size: 25,))
 
-                          hintText: 'Search for Places.......',
-                          hintStyle: AppStyles.regular16LightGrayColor,
-                          prefixIcon: Icon(
-                            Icons.search_outlined,
-                            color: AppColors.mainGrayColor,
-                            size: 25,
-                          ),
-                          suffixIcon: IconButton(
-                              onPressed: (){
-                                Navigator.push(context,
-                                    MaterialPageRoute(
-                                        builder: (_)=>CameraScreen()));
-                              },
-                              icon: Icon(Icons.camera_alt_rounded,
-                                color: AppColors.lightMainColor,
-                                size: 25,)),
+                              ],
 
-                        ),
+
+
+                            ))
+
                       ]
                   ),
                 ),
@@ -145,47 +181,68 @@ class HomeTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              SizedBox(width: context.width*0.15,),
               Text("Popular Itineraries",
                 style: AppStyles.nunito16navy,),
-              TextButton(
-                  onPressed: (){
-
-                  },
-                  child: Text("see all",
-                    style: AppStyles.regular16cyanColor,))
+              Spacer()
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ItineraryCard(
-                  image: AppAssets.pyramidsImage,
-                  title: "Cairo in one Day",
-                  places: "4 places",
-                  price: "500 EGP",
-                  duration: "1_day"),
-              ItineraryCard(
-                  image: AppAssets.pyramidsImage,
-                  title: "Hurghada Weekend",
-                  places: "5 places",
-                  price: "800 EGP",
-                  duration: "2_day"),
+          SizedBox(height: context.height*0.02,),
+          SizedBox(
+            height: context.height*0.32,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: trips.length,
+              itemBuilder: (context, index) {
 
-            ],
+                var trip = trips[index];
+                return Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: ItineraryCard(
+                    image: trip["tripPlaces"][0]["place"]["mainImageUrl"], // مؤقتًا
+                    title: trip["tripName"],
+                    places: "${trip["tripPlaces"].length} Places",
+                    price: "${trip["tripPlaces"][0]["estimatedCost"]} EGP",
+                    duration: "${trip["durationDays"]} Days",
+                  ),
+                );
+              },
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text("Popular Itineraries",
+              Text("Popular places",
                 style: AppStyles.nunito16navy,),
               TextButton(
                   onPressed: (){
-
+                    Navigator.push(context,
+                        MaterialPageRoute(
+                            builder: (_)=>ExploreTap()));
                   },
                   child: Text("see all",
                     style: AppStyles.regular16cyanColor,))
             ],
           ),
+          GridView.builder(
+            shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: places.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: .7,),
+              itemBuilder: (context, index) {
+              var place = places[index];
+                return PlaceCard(
+                  place: places[index],
+                );
+              },
+          )
+
+
+
 
 
         ],

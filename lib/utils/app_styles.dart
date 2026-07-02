@@ -96,6 +96,11 @@ class AppStyles {
       fontSize: 13 ,
       fontWeight:FontWeight.w400
   );
+  static TextStyle regular20DarkGrayColor = GoogleFonts.cairo(
+      color: AppColors.darkGrayColor,
+      fontSize: 20 ,
+      fontWeight:FontWeight.w400
+  );
   static TextStyle regular16 = GoogleFonts.cairo(
       fontSize: 16 ,
       fontWeight:FontWeight.w400
@@ -107,9 +112,15 @@ class AppStyles {
   );
   static TextStyle regular16navyBlueColor = GoogleFonts.cantoraOne(
       color: AppColors.navyBlueColor,
-      fontSize: 12 ,
+      fontSize: 16 ,
       fontWeight:FontWeight.w400
   );
+  static TextStyle regular20navyBlueColor = GoogleFonts.cantoraOne(
+      color: AppColors.navyBlueColor,
+      fontSize: 20 ,
+      fontWeight:FontWeight.w400
+  );
+
   static TextStyle regular12greenColor = GoogleFonts.cantoraOne(
       color: AppColors.greenColor,
       fontSize: 12 ,

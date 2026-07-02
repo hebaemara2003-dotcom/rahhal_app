@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:rahhal_app/utils/app_assets.dart';
+import 'package:rahhal_app/utils/screen_size.dart';
 
 import 'explor_model.dart';
 
 class PlaceCard extends StatelessWidget {
-  final PlaceModel place;
+  final Map<String, dynamic> place;
 
   const PlaceCard({
     super.key,
@@ -32,11 +33,19 @@ class PlaceCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(16),
                 ),
-                child: Image.asset(
-                  AppAssets.pyramidsImage,
+                child:Image.network(
+                  place["mainImageUrl"],
                   height: 120,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      AppAssets.pyramidsImage,
+                      height: 120,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    );
+                  },
                 ),
               ),
 
@@ -52,8 +61,8 @@ class PlaceCard extends StatelessWidget {
                     color: Colors.cyan,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
-                    place.city,
+                  child:Text(
+                    place["city"] ?? "Unknown",
                     style: const TextStyle(
                       color: Colors.white,
                     ),
@@ -70,7 +79,7 @@ class PlaceCard extends StatelessWidget {
               children: [
 
                 Text(
-                  place.name,
+                  place["name"] ?? "No Name",
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -83,23 +92,21 @@ class PlaceCard extends StatelessWidget {
                       Icons.people_outline,
                       size: 16,
                     ),
-                    const SizedBox(width: 4),
-                    Text(place.visitors),
+                     SizedBox(width: context.width*0.02),
+                    Expanded(
+                      child: Text(
+                        place["category"] ?? "",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
                 ),
 
                 const SizedBox(height: 4),
 
                 Text(
-                  place.oldPrice,
-                  style: const TextStyle(
-                    decoration:
-                    TextDecoration.lineThrough,
-                  ),
-                ),
-
-                Text(
-                  place.newPrice,
+                  "${place["price"] ?? 0} EGP",
                   style: const TextStyle(
                     color: Colors.red,
                     fontWeight: FontWeight.bold,

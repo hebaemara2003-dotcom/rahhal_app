@@ -3,7 +3,6 @@ class PlaceModel {
   final String city;
   final String name;
   final String visitors;
-  final String oldPrice;
   final String newPrice;
 
   PlaceModel({
@@ -11,7 +10,6 @@ class PlaceModel {
     required this.city,
     required this.name,
     required this.visitors,
-    required this.oldPrice,
     required this.newPrice,
   });
 }

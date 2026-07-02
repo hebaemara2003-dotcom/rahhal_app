@@ -6,7 +6,6 @@ List<PlaceModel> places = [
     city: "Giza",
     name: "Great pyramids of Giza",
     visitors: "12K Visitors",
-    oldPrice: "320 EGP",
     newPrice: "240 EGP",
   ),
 
@@ -15,7 +14,6 @@ List<PlaceModel> places = [
     city: "Giza",
     name: "The Great Sphinx",
     visitors: "11K Visitors",
-    oldPrice: "320 EGP",
     newPrice: "240 EGP",
   ),
 
@@ -24,7 +22,6 @@ List<PlaceModel> places = [
     city: "Luxor",
     name: "Luxor Temple",
     visitors: "8K Visitors",
-    oldPrice: "190 EGP",
     newPrice: "160 EGP",
   ),
 
@@ -33,7 +30,6 @@ List<PlaceModel> places = [
     city: "Hurghada",
     name: "Red Sea Beach",
     visitors: "7K Visitors",
-    oldPrice: "50 EGP",
     newPrice: "Free",
   ),
 ];

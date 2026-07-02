@@ -40,11 +40,19 @@ class ItineraryCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(16),
                 ),
-                child: Image.asset(
+                child: Image.network(
                   image,
                   height: 120,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      AppAssets.pyramidsImage,
+                      height: 120,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    );
+                  },
                 ),
               ),
 
@@ -77,17 +85,25 @@ class ItineraryCard extends StatelessWidget {
 
                 Text(
                   title,
-                  style: AppStyles.caption12navyBlueColor
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppStyles.caption12navyBlueColor,
                 ),
 
                 const SizedBox(height: 8),
 
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined,size: 16),
+                    const Icon(Icons.location_on_outlined, size: 16),
                     const SizedBox(width: 4),
-                    Text(places,
-                    style: AppStyles.caption10navyBlueColor,),
+                    Expanded(
+                      child: Text(
+                        places,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppStyles.caption10navyBlueColor,
+                      ),
+                    ),
                   ],
                 ),
 

@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rahhal_app/camera/recognition_result_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../api/ai_recognition_api.dart';
 import '../main.dart';
+import '../utils/token_storage.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -12,8 +18,8 @@ class CameraScreen extends StatefulWidget {
       _CameraScreenState();
 }
 
-class _CameraScreenState
-    extends State<CameraScreen> {
+class _CameraScreenState extends State<CameraScreen> {
+  final ImagePicker picker = ImagePicker();
 
   late CameraController controller;
   bool isCameraReady = false;
@@ -44,15 +50,47 @@ class _CameraScreenState
     super.dispose();
   }
 
+
   Future<void> takePicture() async {
     if (!controller.value.isInitialized) return;
 
-    await controller.takePicture();
+    final XFile image = await controller.takePicture();
+    String? token = await TokenStorage.getToken();
+
+
+    var result = await recognizeImage(
+      File(image.path),
+      token!,
+    );
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>  RecognitionResultScreen(),
+        builder: (_) => RecognitionResultScreen(
+          imageFile: File(image.path),
+          result: result,
+        ),
+      ),
+    );
+  }
+  Future<void> pickImageFromGallery() async {
+    print("Gallery button Pressed");
+    final XFile image = await controller.takePicture();
+    String? token = await TokenStorage.getToken();
+
+
+    var result = await recognizeImage(
+      File(image.path),
+      token!,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RecognitionResultScreen(
+          imageFile: File(image.path),
+          result: result,
+        ),
       ),
     );
   }
@@ -151,20 +189,47 @@ class _CameraScreenState
                 const Spacer(),
 
                 /// Capture Button
-                GestureDetector(
-                  onTap: takePicture,
-                  child: Container(
-                    width: 85,
-                    height: 85,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.white70,
-                        width: 4,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+
+                    // زر اختيار صورة من المعرض
+                    GestureDetector(
+                      onTap: pickImageFromGallery,
+                      child: Container(
+                        width: 55,
+                        height: 55,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.cyan,
+                          size: 30,
+                        ),
                       ),
                     ),
-                  ),
+
+                    const SizedBox(width: 25),
+
+                    // زر التصوير
+                    GestureDetector(
+                      onTap: takePicture,
+                      child: Container(
+                        width: 85,
+                        height: 85,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          border: Border.all(
+                            color: Colors.white70,
+                            width: 4,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 40),

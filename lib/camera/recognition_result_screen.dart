@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:rahhal_app/api/image_recognition.dart';
+import 'package:rahhal_app/model_api/image_recognition/image_recognition_response.dart';
 import 'package:rahhal_app/onBoarding_screen/custom_button.dart';
 import 'package:rahhal_app/utils/app_assets.dart';
 import 'package:rahhal_app/utils/app_styles.dart';
@@ -7,7 +11,11 @@ import 'package:rahhal_app/utils/screen_size.dart';
 import '../utils/app_colors.dart';
 
 class RecognitionResultScreen extends StatelessWidget {
-  const RecognitionResultScreen({super.key});
+  final File? imageFile;
+  final ImageRecognitionResponse result;
+   RecognitionResultScreen({super.key,
+   required this.imageFile,
+   required this.result});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +44,14 @@ class RecognitionResultScreen extends StatelessWidget {
 
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
+              child: imageFile != null
+                  ? Image.file(
+                imageFile!,
+                height: 220,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              )
+                  : Image.asset(
                 AppAssets.aboEllHoolImage,
                 height: 220,
                 width: double.infinity,

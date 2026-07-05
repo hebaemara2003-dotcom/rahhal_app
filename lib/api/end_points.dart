@@ -5,7 +5,7 @@ class EndPoints{// https://implant-liberty-transfer.ngrok-free.dev/api/Authentic
   static const String popularTripApi = '/api/Trips/popular';
   static const String topRatedPlacesApi = '/api/Places/top-rated';
   static const String scanMonumentApi = '/api/AiRecognition/recognize-image';
-
+  static const String generateItinerary = "/api/generate-itinerary";
 
 
 

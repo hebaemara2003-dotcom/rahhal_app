@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:rahhal_app/api/image_recognition.dart';
 import 'package:rahhal_app/model_api/image_recognition/image_recognition_response.dart';
 
 

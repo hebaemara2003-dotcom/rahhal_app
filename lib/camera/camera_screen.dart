@@ -74,10 +74,12 @@ class _CameraScreenState extends State<CameraScreen> {
     );
   }
   Future<void> pickImageFromGallery() async {
-    print("Gallery button Pressed");
-    final XFile image = await controller.takePicture();
-    String? token = await TokenStorage.getToken();
+    final XFile? image =
+    await picker.pickImage(source: ImageSource.gallery);
 
+    if (image == null) return;
+
+    String? token = await TokenStorage.getToken();
 
     var result = await recognizeImage(
       File(image.path),

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:rahhal_app/api/image_recognition.dart';
 import 'package:rahhal_app/model_api/image_recognition/image_recognition_response.dart';
 import 'package:rahhal_app/onBoarding_screen/custom_button.dart';
 import 'package:rahhal_app/utils/app_assets.dart';
@@ -72,7 +71,7 @@ class RecognitionResultScreen extends StatelessWidget {
                      Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Great Sphinx of Giza",
+                        result.placeDetails?.name??"",
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -98,8 +97,7 @@ class RecognitionResultScreen extends StatelessWidget {
                         ),
 
                         SizedBox(width: 10),
-                        Text(
-                          "Ticket Price : 240 EGP",
+                Text("Ticket Price : ${result.placeDetails?.price??""} EGP",
                           style: TextStyle(fontSize: 16),
                         ),
                       ],
@@ -123,8 +121,7 @@ class RecognitionResultScreen extends StatelessWidget {
                         ),
 
                         SizedBox(width: 10),
-                        Text(
-                          "8:00 AM - 5:00 PM",
+                Text(result.placeDetails?.visitingTime??"",
                           style: TextStyle(fontSize: 16),
                         ),
                       ],
@@ -143,9 +140,9 @@ class RecognitionResultScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment:
                   CrossAxisAlignment.start,
-                  children: const [
+                  children: [
 
-                    Text(
+                    const Text(
                       "Historical Background",
                       style: TextStyle(
                         fontSize: 20,
@@ -153,11 +150,11 @@ class RecognitionResultScreen extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
 
                     Text(
-                      "The Great Sphinx of Giza is a limestone statue with the body of a lion and the head of a human. It is one of the most famous monuments in Egypt and attracts millions of visitors every year.",
-                      style: TextStyle(
+                      result.placeDetails!.historicalBackGround!,
+                      style: const TextStyle(
                         fontSize: 15,
                         height: 1.5,
                       ),

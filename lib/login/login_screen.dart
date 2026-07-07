@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rahhal_app/I10n/app_localizations.dart';
 import 'package:rahhal_app/custom/custom_text_field.dart';
 import 'package:rahhal_app/home/home_screen.dart';
 import 'package:rahhal_app/login/register_screen.dart';
@@ -159,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Don’t have an account?',
+                        Text(AppLocalizations.of(context)!.do_not_have_an_account,
                           style:AppStyles.regular16DarkGrayColor,
                         ),
                         TextButton(

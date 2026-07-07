@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../model_api/generate_itinerary/generate_itinerary_response.dart';
+
 /// ---------------------------------------------------------------------
 /// CENTRALIZED STRINGS (for future localization/multi-language support)
 /// ---------------------------------------------------------------------
@@ -12,90 +14,6 @@ class TripPlanStrings {
 
   static const String startTrip = 'Start Trip';
 }
-
-/// ---------------------------------------------------------------------
-/// DATA MODELS
-/// ---------------------------------------------------------------------
-class TripPlanStopModel {
-  final String time;
-  final String placeName;
-  final String visitDuration;
-  final String imageUrl;
-
-  const TripPlanStopModel({
-    required this.time,
-    required this.placeName,
-    required this.visitDuration,
-    required this.imageUrl,
-  });
-}
-
-class TripPlanModel {
-  final String totalCost;
-  final String estimatedDuration;
-  final String placesCount;
-  final List<TripPlanStopModel> stops;
-
-  const TripPlanModel({
-    required this.totalCost,
-    required this.estimatedDuration,
-    required this.placesCount,
-    required this.stops,
-  });
-  factory TripPlanModel.fromJson(Map<String, dynamic> json) {
-    return TripPlanModel(
-      totalCost: json['totalCost'] != null ? json['totalCost'].toString() : '',
-      estimatedDuration: json['estimatedDuration'] != null ? json['estimatedDuration'].toString() : '',
-      placesCount: json['placesCount'] != null ? json['placesCount'].toString() : '',
-      stops: (json['stops'] as List?)?.map((stop) => TripPlanStopModel(
-        time: stop['time'] != null ? stop['time'].toString() : '',
-        placeName: stop['placeName'] != null ? stop['placeName'].toString() : '',
-        visitDuration: stop['visitDuration'] != null ? stop['visitDuration'].toString() : '',
-        imageUrl: stop['imageUrl'] != null ? stop['imageUrl'].toString() : '',
-      )).toList() ?? [],
-    );
-  }
-}
-
-/// ---------------------------------------------------------------------
-/// MOCK DATA (simulating AI-generated output)
-/// ---------------------------------------------------------------------
-final TripPlanModel mockTripPlan = TripPlanModel(
-  totalCost: '870 EGP',
-  estimatedDuration: '1 Day',
-  placesCount: '4 Places',
-  stops: const [
-    TripPlanStopModel(
-      time: '09:00 AM',
-      placeName: 'Great pyramids of Giza',
-      visitDuration: '2.0 Hours',
-      imageUrl:
-      'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=200&q=80',
-    ),
-    TripPlanStopModel(
-      time: '11:30 AM',
-      placeName: 'The Great Sphinx',
-      visitDuration: '1.5 Hours',
-      imageUrl:
-      'https://images.unsplash.com/photo-1539768942893-daf53e448371?w=200&q=80',
-    ),
-    TripPlanStopModel(
-      time: '02:00 PM',
-      placeName: 'Egyptian Museum',
-      visitDuration: '2.0 Hours',
-      imageUrl:
-      'https://images.unsplash.com/photo-1608731267464-c0c889c2ff02?w=200&q=80',
-    ),
-    TripPlanStopModel(
-      time: '04:30 PM',
-      placeName: 'Cairo Citadel',
-      visitDuration: '1.5 Hours',
-      imageUrl:
-      'https://images.unsplash.com/photo-1572252009286-268acec5ca0a?w=200&q=80',
-    ),
-  ],
-);
-
 /// ---------------------------------------------------------------------
 /// THEME CONSTANTS
 /// ---------------------------------------------------------------------
@@ -110,11 +28,20 @@ class _AppColors {
 /// ---------------------------------------------------------------------
 /// SCREEN
 /// ---------------------------------------------------------------------
-class NewTripPlanScreen extends StatelessWidget {
-  final TripPlanModel tripPlan;
+class NewTripPlanScreen extends StatefulWidget {
 
-  const NewTripPlanScreen({super.key, required this.tripPlan});
+final Data trip;
 
+const NewTripPlanScreen({
+super.key,
+required this.trip,
+});
+
+  @override
+  State<NewTripPlanScreen> createState() => _NewTripPlanScreenState();
+}
+
+class _NewTripPlanScreenState extends State<NewTripPlanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,8 +73,6 @@ class NewTripPlanScreen extends StatelessWidget {
   }
 
   // ---------------------------------------------------------------
-  // APP BAR
-  // ---------------------------------------------------------------
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
@@ -169,8 +94,6 @@ class NewTripPlanScreen extends StatelessWidget {
     );
   }
 
-  // ---------------------------------------------------------------
-  // MAP CONTAINER (local asset)
   // ---------------------------------------------------------------
   Widget _buildMapContainer(BuildContext context) {
     final double mapHeight = MediaQuery.of(context).size.height * 0.19;
@@ -194,27 +117,25 @@ class NewTripPlanScreen extends StatelessWidget {
   }
 
   // ---------------------------------------------------------------
-  // SUMMARY STATS
-  // ---------------------------------------------------------------
   Widget _buildSummarySection() {
     return Column(
       children: [
         _summaryRow(
           icon: Icons.attach_money_rounded,
           title: TripPlanStrings.totalCost,
-          value: tripPlan.totalCost,
+           value: "${widget.trip.totalBudget ?? 0} EGP",
         ),
         const SizedBox(height: 10),
         _summaryRow(
           icon: Icons.access_time_rounded,
           title: TripPlanStrings.estimatedDuration,
-          value: tripPlan.estimatedDuration,
+           value: "${widget.trip.durationDays ?? 0} Days",
         ),
         const SizedBox(height: 10),
         _summaryRow(
           icon: Icons.location_on_outlined,
           title: TripPlanStrings.numberOfPlaces,
-          value: tripPlan.placesCount,
+          value: "${widget.trip.placesCount ?? 0} Places",
         ),
       ],
     );
@@ -257,8 +178,6 @@ class NewTripPlanScreen extends StatelessWidget {
   }
 
   // ---------------------------------------------------------------
-  // TIMELINE CARD
-  // ---------------------------------------------------------------
   Widget _buildTimelineCard(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -275,16 +194,16 @@ class NewTripPlanScreen extends StatelessWidget {
         ],
       ),
       child: Column(
-        children: List.generate(tripPlan.stops.length, (index) {
-          final stop = tripPlan.stops[index];
-          final bool isLast = index == tripPlan.stops.length - 1;
+        children: List.generate(widget.trip.tripPlaces?.length ??0, (index) {
+          final stop = widget.trip.tripPlaces![index];
+          final bool isLast = index == widget.trip.tripPlaces!.length - 1;
           return _buildTimelineRow(stop, isLast);
         }),
       ),
     );
   }
 
-  Widget _buildTimelineRow(TripPlanStopModel stop, bool isLast) {
+  Widget _buildTimelineRow(TripPlaces stop, bool isLast) {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,7 +211,7 @@ class NewTripPlanScreen extends StatelessWidget {
           SizedBox(
             width: 52,
             child: Text(
-              stop.time,
+              stop.startTime??"",
               textAlign: TextAlign.right,
               style: const TextStyle(
                 fontSize: 11.5,
@@ -335,7 +254,8 @@ class NewTripPlanScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStopCard(TripPlanStopModel stop) {
+  Widget _buildStopCard(TripPlaces stop) {
+    final place = stop.place!;
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -348,7 +268,9 @@ class NewTripPlanScreen extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Image.network(
-              stop.imageUrl,
+              place.mainImageUrl!.startsWith("http")
+                  ? place.mainImageUrl!
+                  : "https://implant-liberty-transfer.ngrok-free.dev${place.mainImageUrl}",
               width: 54,
               height: 54,
               fit: BoxFit.cover,
@@ -356,7 +278,7 @@ class NewTripPlanScreen extends StatelessWidget {
                 width: 54,
                 height: 54,
                 color: Colors.grey.shade300,
-                child: const Icon(Icons.image_not_supported_outlined, size: 18),
+                child: const Icon(Icons.image_not_supported_outlined),
               ),
             ),
           ),
@@ -366,28 +288,35 @@ class NewTripPlanScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  stop.placeName,
+                    place?.name??"",
                   style: const TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
                     color: _AppColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.access_time_rounded,
-                        size: 13, color: _AppColors.textGrey),
+                    const Icon(
+                      Icons.access_time_rounded,
+                      size: 13,
+                      color: _AppColors.textGrey,
+                    ),
                     const SizedBox(width: 4),
-                    Text(
-                      stop.visitDuration,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: _AppColors.textGrey,
+
+                    Expanded(
+                      child: Text(
+                        "${stop.startTime} - ${stop.endTime}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: _AppColors.textGrey,
+                        ),
                       ),
                     ),
                   ],
-                ),
+                )
               ],
             ),
           ),
@@ -396,8 +325,6 @@ class NewTripPlanScreen extends StatelessWidget {
     );
   }
 
-  // ---------------------------------------------------------------
-  // BOTTOM BUTTON
   // ---------------------------------------------------------------
   Widget _buildBottomButton() {
     return Container(
@@ -449,11 +376,9 @@ class NewTripPlanApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, fontFamily: 'Roboto'),
-      home: NewTripPlanScreen(tripPlan: mockTripPlan),
+      // home: NewTripPlanScreen(trip: null,),
     );
   }
 }
 
-void main() {
-  runApp(const NewTripPlanApp());
-}
+

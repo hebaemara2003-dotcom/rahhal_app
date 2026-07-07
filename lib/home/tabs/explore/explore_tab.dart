@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../../api/places_api.dart';
+import '../../../api/explor_api_directory/explore_api.dart';
 import '../../../api/search_places_api.dart';
 import 'explor_data.dart';
 import 'explor_widget.dart';
@@ -63,7 +63,9 @@ class _ExploreTapState extends State<ExploreTap> {
                   print("Searching: $value");
 
                   if (value.isEmpty) {
+                    print("Loading Places...");
                     places = await getPlaces();
+                    print(places);
                   } else {
                     places = await searchPlaces(value);
                   }

@@ -1,381 +1,258 @@
 import 'package:flutter/material.dart';
 import 'package:rahhal_app/place_details/new_trip_plan_screen.dart';
-import '../api/places_api.dart' as PlacesApi;
-import 'places_api.dart';
+import 'package:rahhal_app/utils/screen_size.dart';
 
-/// ---------------------------------------------------------------------
-/// DATA MODEL
-/// ---------------------------------------------------------------------
-class RecommendedPlaceModel {
-  final String name;
-  final String price;
-  final String imageUrl;
+import '../api/generate_itinerary_api.dart';
+import '../model_api/generate_itinerary/generate_itinerary_request.dart';
+import '../model_api/generate_itinerary/generate_itinerary_response.dart';
+import 'new_trip_screen.dart';
 
-  const RecommendedPlaceModel({
-    required this.name,
-    required this.price,
-    required this.imageUrl,
+  class RecommendedPlacesScreen extends StatefulWidget {
+  final String city;
+  final String duration;
+  final String travelers;
+  final List<String> interests;
+  final double budget;
+
+  const RecommendedPlacesScreen({
+  super.key,
+  required this.city,
+  required this.duration,
+  required this.travelers,
+  required this.interests,
+  required this.budget,
   });
-}
-
-/// ---------------------------------------------------------------------
-/// MOCK DATA
-/// ---------------------------------------------------------------------
-final List<RecommendedPlaceModel> mockRecommendedPlaces = [
-  const RecommendedPlaceModel(
-    name: 'Great pyramids of Giza',
-    price: '240 EGP',
-    imageUrl:
-    'assets/images/pyramids_small.png',
-  ),
-  const RecommendedPlaceModel(
-    name: 'Egyption Museum',
-    price: '200 EGP',
-    imageUrl:
-    'assets/images/museum.png',
-  ),
-];
-
-/// ---------------------------------------------------------------------
-/// THEME CONSTANTS
-/// ---------------------------------------------------------------------
-class _AppColors {
-  static const Color activeStep = Color(0xFF004F71);
-  static const Color textDark = Color(0xFF1A1A1A);
-  static const Color textGrey = Color(0xFF8A8A8A);
-  static const Color priceColor = Color(0xFF6C7A93);
-  static const Color primaryButton = Color(0xFF005BEA);
-  static const Color pageBackground = Color(0xFFF6F7F9);
-}
-
-/// ---------------------------------------------------------------------
-/// SCREEN
-/// ---------------------------------------------------------------------
-class RecommendedPlacesScreen extends StatelessWidget {
-  final List<RecommendedPlaceModel> places;
-
-  const RecommendedPlacesScreen({super.key, required this.places});
 
   @override
+  State<RecommendedPlacesScreen> createState() => _RecommendedPlacesScreenState();
+}
+
+class _RecommendedPlacesScreenState extends State<RecommendedPlacesScreen> {
+  GenerateItineraryResponse? itineraryResponse;
+  @override
+  void initState() {
+    super.initState();
+
+    getItinerary();
+  }
+  Future<void> getItinerary() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    GenerateItineraryRequest request = GenerateItineraryRequest(
+      city: widget.city,
+      durationDays: widget.duration == "1 Day"
+          ? 1
+          : widget.duration == "2-3 Days"
+          ? 2
+          : 4,
+      category: widget.interests.first,
+      budget: widget.budget,
+      travelersCount: int.parse(widget.travelers.split(" ").first),
+      isEgyptian: true,
+      isStudent: true,
+      language: "en",
+    );
+
+    // استدعاء الـ API
+    itineraryResponse = await generateItinerary(request);
+
+    // التحقق من النتيجة
+    if (itineraryResponse?.data == null) {
+      setState(() {
+        isLoading = false;
+      });
+
+      debugPrint(itineraryResponse?.message ?? "Unknown Error");
+      return;
+    }
+
+    print(itineraryResponse!.data!.tripPlaces!.length);
+
+    for (var place in itineraryResponse!.data!.tripPlaces!) {
+      print(place.place?.name);
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  bool isLoading = false;
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      backgroundColor: _AppColors.pageBackground,
-      appBar: _buildAppBar(context),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: const Icon(Icons.arrow_back, color: Colors.black),
+        title: const Text(
+          'Start Planning',
+          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1.0),
+          child: Container(
+            color: Colors.grey[200],
+            height: 1.0,
+          ),
+        ),
+      ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+
+              // 3-Segment Progress Indicator Steps
+              Row(
                 children: [
-                  _buildProgressIndicator(),
-                  const SizedBox(height: 26),
-                  _buildSectionHeader(),
-                  const SizedBox(height: 14),
+                  Expanded(child: Container(height: 4, decoration: BoxDecoration(color: const Color(0xFF0056C6), borderRadius: BorderRadius.circular(2)))),
+                  const SizedBox(width: 12),
+                  Expanded(child: Container(height: 4, decoration: BoxDecoration(color: const Color(0xFF0056C6), borderRadius: BorderRadius.circular(2)))),
+                  const SizedBox(width: 12),
+                  Expanded(child: Container(height: 4, decoration: BoxDecoration(color: const Color(0xFF0056C6), borderRadius: BorderRadius.circular(2)))),
                 ],
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                itemCount: places.length,
-                itemBuilder: (context, index) {
-                  return _buildPlaceCard(places[index]);
+              const SizedBox(height: 35),
+
+              // Title and Subtitle Texts
+              const Text(
+                'Recommended Places',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Based on your budget and interests',
+                style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              ),
+              const SizedBox(height: 24),
+
+              // Recommended Cards List View Setup
+              Expanded(
+                child: isLoading
+                    ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+                    : ListView.builder(
+                  itemCount:
+                  itineraryResponse?.data?.tripPlaces?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    final tripPlace =
+                    itineraryResponse!.data!.tripPlaces![index];
+
+                    return _buildRecommendedCard(
+                      tripPlace.place?.name ?? "",
+                      "${tripPlace.place?.price ?? 0} EGP",
+                      tripPlace.place?.mainImageUrl ?? "",
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0056C6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                    elevation: 0,
+                  ),
+                  onPressed: () {
+                    if (itineraryResponse?.data == null) return;
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>NewTripPlanScreen(
+                            trip: itineraryResponse!.data!)
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.location_on, color: Colors.white, size: 20),
+                  label: const Text('View on Map', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF0056C6), width: 1.5),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                  ),
+                  onPressed: () {},
+                  child: const Text('Back to Home', style: TextStyle(color: Color(0xFF0056C6), fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecommendedCard(String name, String price, String imageUrl) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                imageUrl.startsWith("http")
+                    ? imageUrl
+                    : "https://implant-liberty-transfer.ngrok-free.dev$imageUrl",
+                width: 80,
+                height: 70,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: context.width*0.3,
+                    height: context.height*0.2,
+                    color: Colors.grey.shade300,
+                  );
                 },
               ),
             ),
-            _buildBottomActions(context),
+             SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "${price} EGP",
+                    overflow: TextOverflow.ellipsis,
+                  )
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
-
-  // ---------------------------------------------------------------
-  // APP BAR
-  // ---------------------------------------------------------------
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.08),
-      centerTitle: true,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: _AppColors.textDark),
-        onPressed: () => Navigator.maybePop(context),
-      ),
-      title: const Text(
-        'Start Planning',
-        style: TextStyle(
-          color: _AppColors.textDark,
-          fontSize: 17,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------
-  // STEP PROGRESS BAR (all 3 active - final step)
-  // ---------------------------------------------------------------
-  Widget _buildProgressIndicator() {
-    return Row(
-      children: List.generate(3, (index) {
-        return Expanded(
-          child: Container(
-            margin: EdgeInsets.only(right: index != 2 ? 8 : 0),
-            height: 4,
-            decoration: BoxDecoration(
-              color: _AppColors.activeStep,
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-        );
-      }),
-    );
-  }
-
-  // ---------------------------------------------------------------
-  // SECTION HEADER
-  // ---------------------------------------------------------------
-  Widget _buildSectionHeader() {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Recommended Places',
-          style: TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.bold,
-            color: _AppColors.textDark,
-          ),
-        ),
-        SizedBox(height: 4),
-        Text(
-          'Based on your budget and interests',
-          style: TextStyle(
-            fontSize: 13,
-            color: _AppColors.textGrey,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ---------------------------------------------------------------
-  // PLACE CARD
-  // ---------------------------------------------------------------
-  Widget _buildPlaceCard(RecommendedPlaceModel place) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              place.imageUrl,
-              width: 64,
-              height: 64,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: 64,
-                height: 64,
-                color: Colors.grey.shade300,
-                child: const Icon(Icons.image_not_supported_outlined),
-              ),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  place.name,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: _AppColors.textDark,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  place.price,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: _AppColors.priceColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------
-  // BOTTOM ACTION BUTTONS
-  // ---------------------------------------------------------------
-  Widget _buildBottomActions(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-      decoration: BoxDecoration(
-        color: _AppColors.pageBackground,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _AppColors.primaryButton,
-                shape: const StadiumBorder(),
-                elevation: 0,
-              ),
-              onPressed: () {
-                debugPrint('Generate Trip Plan tapped');
-              },
-              child: const Text(
-                'Generate Trip Plan',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _AppColors.primaryButton,
-                shape: const StadiumBorder(),
-                elevation: 0,
-              ),
-              onPressed: () async {
-                Map<String, dynamic> body = {
-                  "city": "Cairo",
-                  "durationDays": 2,
-                  "category": "Coptic",
-                  "budget": 400,
-                  "isEgyptian": true,
-                  "isStudent": true,
-                  "language": "en",
-                  "travelersCount": 2
-                };
-                try {
-                  // 1. بننادي الـ API والداتا بترجع
-                  var responseData = await PlacesApi.generateTripItinerary(requestBody: body);
-
-                  if (responseData != null) {
-                    print("الرد وصل تمام وجاري التحويل للموديل...");
-
-                    // 2. بنترجم الـ Map اللي راجعة لـ Model عشان الشاشة الجديدة تفهمها
-                    TripPlanModel planModel = TripPlanModel.fromJson(responseData);
-
-                    // 3. بننقل للشاشة الجديدة وبنبعت لها الـ Model المترجم
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NewTripPlanScreen(tripPlan: planModel),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  print("خطأ في الاتصال أو التحويل: $e");
-                }
-              },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.location_on, color: Colors.white, size: 18),
-                  SizedBox(width: 8),
-                  Text(
-                    'View on Map',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                backgroundColor: Colors.white,
-                side: const BorderSide(color: _AppColors.primaryButton, width: 1.4),
-                shape: const StadiumBorder(),
-              ),
-              onPressed: () {
-                debugPrint('Back to Home tapped');
-              },
-              child: const Text(
-                'Back to Home',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: _AppColors.primaryButton,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-
-/// ---------------------------------------------------------------------
-/// ENTRY POINT (for standalone preview / testing)
-/// ---------------------------------------------------------------------
-class RecommendedPlacesApp extends StatelessWidget {
-  const RecommendedPlacesApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, fontFamily: 'Roboto'),
-      home: RecommendedPlacesScreen(places: mockRecommendedPlaces),
-    );
-  }
-}
-
-void main() {
-  runApp(const RecommendedPlacesApp());
 }

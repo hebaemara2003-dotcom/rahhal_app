@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.card_travel_outlined),
                 activeIcon: Icon(Icons.card_travel),
-                label: "Trip",
+                label: "My Trip",
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.favorite_border_outlined),

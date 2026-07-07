@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rahhal_app/place_details/start_planning_2_screen.dart';
 
 /// ---------------------------------------------------------------------
 /// THEME CONSTANTS
@@ -275,8 +276,30 @@ class _StartPlanningScreenState extends State<StartPlanningScreen> {
           ),
           elevation: 0,
         ),
-        onPressed: () {
-          // TODO: Hook up navigation to the next planning step
+          onPressed: () {
+            if (_selectedCity == null ||
+                _selectedBudget == null ||
+                _selectedTravelers == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Please complete all fields"),
+                ),
+              );
+              return;
+            }
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    StartPlanningInterestsScreen(
+                      city: _selectedCity!,
+                      duration: _selectedBudget!,
+                      travelers: _selectedTravelers!,
+                    ),
+              )
+            );
+
           debugPrint(
             'Next tapped -> city: $_selectedCity, travelers: $_selectedTravelers, budget: $_selectedBudget',
           );

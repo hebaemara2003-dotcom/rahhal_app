@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:rahhal_app/home/tabs/explore/explor_model.dart';
+import 'package:rahhal_app/model_api/favorite/favourite_response.dart';
+
+import '../api/favourite_api.dart';
+import '../home/tabs/explore/explor_data.dart';
 
 /// ---------------------------------------------------------------------
 /// CENTRALIZED STRINGS (for future localization/multi-language support)
@@ -9,22 +14,8 @@ class FavoriteStrings {
   static const String emptyStateMessage = 'No favorite places found';
 }
 
-/// ---------------------------------------------------------------------
-/// DATA MODEL
-/// ---------------------------------------------------------------------
-class FavoritePlaceModel {
-  final String name;
-  final String city;
-  final int priceEgp;
-  final String imageUrl;
 
-  const FavoritePlaceModel({
-    required this.name,
-    required this.city,
-    required this.priceEgp,
-    required this.imageUrl,
-  });
-}
+
 
 /// ---------------------------------------------------------------------
 /// THEME CONSTANTS
@@ -49,66 +40,54 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
+  List <FavouriteResponse> favouritePlace=[];
+  bool isLoading = true;
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
-
-  final List<FavoritePlaceModel> _favorites = [
-    const FavoritePlaceModel(
-      name: 'Great pyramids of Giza',
-      city: 'Giza',
-      priceEgp: 240,
-      imageUrl:
-      'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=200&q=80',
-    ),
-    const FavoritePlaceModel(
-      name: 'The Great Sphinx',
-      city: 'Giza',
-      priceEgp: 240,
-      imageUrl:
-      'https://images.unsplash.com/photo-1539768942893-daf53e448371?w=200&q=80',
-    ),
-    const FavoritePlaceModel(
-      name: 'Egyptian Museum',
-      city: 'Cairo',
-      priceEgp: 210,
-      imageUrl:
-      'https://images.unsplash.com/photo-1608731267464-c0c889c2ff02?w=200&q=80',
-    ),
-    const FavoritePlaceModel(
-      name: 'Cairo Citadel',
-      city: 'Cairo',
-      priceEgp: 180,
-      imageUrl:
-      'https://images.unsplash.com/photo-1572252009286-268acec5ca0a?w=200&q=80',
-    ),
-  ];
-
-  List<FavoritePlaceModel> get _filteredFavorites {
-    if (_query.trim().isEmpty) return _favorites;
-    final String lowerQuery = _query.toLowerCase();
-    return _favorites
-        .where(
-          (place) =>
-      place.name.toLowerCase().contains(lowerQuery) ||
-          place.city.toLowerCase().contains(lowerQuery),
-    )
-        .toList();
-  }
-
-  void _removeFavorite(FavoritePlaceModel place) {
-    setState(() => _favorites.remove(place));
-  }
-
   @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    loadFavorites();
   }
+  Future<void> loadFavorites() async {
+    favouritePlace = await getFavoritePlaces();
+
+    print(favouritePlace);
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  List<FavouriteResponse> get _filteredFavorites {
+    if (_query.trim().isEmpty) return favouritePlace;
+
+    return favouritePlace.where((place) {
+      return (place.name ?? "")
+          .toLowerCase()
+          .contains(_query.toLowerCase()) ||
+          (place.city ?? "")
+              .toLowerCase()
+              .contains(_query.toLowerCase());
+    }).toList();
+  }
+
+  // @override
+  // void dispose() {
+  //   _searchController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     final places = _filteredFavorites;
-
     return Scaffold(
       backgroundColor: _AppColors.pageBackground,
       appBar: _buildAppBar(context),
@@ -129,9 +108,11 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: _buildFavoriteCard(places[index]),
+                      child: _buildFavoriteCard(
+                          places[index]
+                      )
                   );
-                },
+                      },
               ),
             ),
           ],
@@ -203,7 +184,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   // ---------------------------------------------------------------
   // FAVORITE CARD
   // ---------------------------------------------------------------
-  Widget _buildFavoriteCard(FavoritePlaceModel place) {
+  Widget _buildFavoriteCard(FavouriteResponse place) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -223,7 +204,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              place.imageUrl,
+              place.mainImageUrl?? "",
               width: 58,
               height: 58,
               fit: BoxFit.cover,
@@ -241,7 +222,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  place.name,
+                  place.name??"",
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -250,12 +231,12 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  place.city,
+                  place.city??"",
                   style: const TextStyle(fontSize: 12.5, color: _AppColors.textGrey),
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '${place.priceEgp} EGP',
+                  '${place.price} EGP',
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -267,8 +248,11 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.favorite, color: Colors.red, size: 24),
-            onPressed: () => _removeFavorite(place),
-          ),
+            onPressed: () {
+              setState(() {
+                favouritePlace.remove(place);
+              });
+            },          ),
         ],
       ),
     );

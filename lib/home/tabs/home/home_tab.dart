@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:rahhal_app/api/top_rated_places_api.dart';
 import 'package:rahhal_app/home/tabs/explore/explore_tab.dart';
+import 'package:rahhal_app/place_details/start_planning_1_screen.dart';
 import '../../../api/popular_trip_api.dart';
 import '../../../camera/camera_screen.dart';
 import '../../../custom/custom_text_field.dart';
@@ -153,7 +154,9 @@ class _HomeTabState extends State<HomeTab> {
                       width: context.width*.45,
                       height: context.height*0.05,
                       onPressed: (){
-
+                        Navigator.push(context,
+                            MaterialPageRoute(
+                                builder: (_)=>StartPlanningScreen()));
                       },
                       borderRadius: BorderRadius.circular(44),
                       child:Row(
@@ -161,12 +164,10 @@ class _HomeTabState extends State<HomeTab> {
                         children: [
                           Text("Start Planning",
                             style: AppStyles.nunito11White,),
-                          IconButton(
-                              onPressed: (){
+                           Icon(Icons.arrow_forward_ios_outlined,
+                                 color: AppColors.whiteColor,)
 
-                              },
-                              icon: Icon(Icons.arrow_forward_ios_outlined,
-                                color: AppColors.whiteColor,))
+
                         ],
                       ),
                     )
@@ -189,7 +190,7 @@ class _HomeTabState extends State<HomeTab> {
           ),
           SizedBox(height: context.height*0.02,),
           SizedBox(
-            height: context.height*0.32,
+            height: context.height*0.37,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: trips.length,
@@ -199,7 +200,9 @@ class _HomeTabState extends State<HomeTab> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 12),
                   child: ItineraryCard(
-                    image: trip["tripPlaces"][0]["place"]["mainImageUrl"], // مؤقتًا
+                    tripId: trip["id"],
+                    placeId: trip["tripPlaces"][0]["place"]["id"],
+                    image: trip["tripPlaces"][0]["place"]["mainImageUrl"],
                     title: trip["tripName"],
                     places: "${trip["tripPlaces"].length} Places",
                     price: "${trip["tripPlaces"][0]["estimatedCost"]} EGP",
@@ -232,7 +235,7 @@ class _HomeTabState extends State<HomeTab> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: .7,),
+                childAspectRatio: .57,),
               itemBuilder: (context, index) {
               var place = places[index];
                 return PlaceCard(

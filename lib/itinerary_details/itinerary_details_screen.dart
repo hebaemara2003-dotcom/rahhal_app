@@ -1,200 +1,221 @@
 import 'package:flutter/material.dart';
 
-class ItineraryStopModel {
-  final String time;
-  final String placeName;
-  final String duration;
-  final String imageUrl;
-
-  const ItineraryStopModel({
-    required this.time,
-    required this.placeName,
-    required this.duration,
-    required this.imageUrl,
-  });
-}
-
-class ItineraryModel {
-  final String title;
-  final String subtitle;
-  final String coverImageUrl;
-  final String ticketPrice;
-  final String durationLabel;
-  final String placesCount;
-  final List<ItineraryStopModel> stops;
-
-  const ItineraryModel({
-    required this.title,
-    required this.subtitle,
-    required this.coverImageUrl,
-    required this.ticketPrice,
-    required this.durationLabel,
-    required this.placesCount,
-    required this.stops,
-  });
-}
-
-final ItineraryModel mockItinerary = ItineraryModel(
-  title: 'Cairo in One Day',
-  subtitle: 'Explore the best of Cairo in just one day!',
-  coverImageUrl: 'assets/images/pyramids.png',
-  ticketPrice: '500 EGP',
-  durationLabel: '1 Day',
-  placesCount: '4 Places',
-  stops: const [
-    ItineraryStopModel(
-      time: '09:00 AM',
-      placeName: 'Great pyramids of Giza',
-      duration: '2.0 Hours',
-      imageUrl: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=200&q=80',
-    ),
-    ItineraryStopModel(
-      time: '11:30 AM',
-      placeName: 'The Great Sphinx',
-      duration: '1.5 Hours',
-      imageUrl: 'https://images.unsplash.com/photo-1539768942893-daf53e448371?w=200&q=80',
-    ),
-    ItineraryStopModel(
-      time: '02:00 PM',
-      placeName: 'Egyptian Museum',
-      duration: '2.0 Hours',
-      imageUrl: 'https://images.unsplash.com/photo-1608731267464-c0c889c2ff02?w=200&q=80',
-    ),
-    ItineraryStopModel(
-      time: '04:30 PM',
-      placeName: 'Cairo Citadel',
-      duration: '1.5 Hours',
-      imageUrl: 'https://images.unsplash.com/photo-1572252009286-268acec5ca0a?w=200&q=80',
-    ),
-  ],
-);
-
-class _AppColors {
-  static const Color primaryBlue = Color(0xFF005BEA);
-  static const Color textDark = Color(0xFF1A1A1A);
-  static const Color textGrey = Color(0xFF8A8A8A);
-  static const Color iconBg = Color(0xFFEFF2F6);
-  static const Color cardBorder = Color(0xFFEDEDED);
-  static const Color divider = Color(0xFFEDEDED);
-}
-
 class ItineraryDetailsScreen extends StatelessWidget {
-  final ItineraryModel itinerary;
-
-  const ItineraryDetailsScreen({super.key, required this.itinerary});
+  const ItineraryDetailsScreen({super.key, required int tripId});
 
   @override
   Widget build(BuildContext context) {
+    // الألوان المعتمدة من التصميم
+    const primaryColor = Color(0xFF0056B3); // الأزرق الملكي للأزرار والأيقونات
+    const accentContainerColor = Color(0xFFE7F1FF); // خلفية أيقونات الميزات الخفيفة
+    const backgroundColor = Color(0xFFF8F9FA); // خلفية التطبيق الهادئة
+
+    // قائمة الأماكن السياحية المكتوبة في الصورة بدون الـ Timeline المزال
+    final placesItems = [
+      {
+        "title": "Great pyramids of Giza",
+        "duration": "2.0 Hours",
+        "image": "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=400&q=80",
+      },
+      {
+        "title": "The Great Sphinx",
+        "duration": "1.5 Hours",
+        "image": "https://images.unsplash.com/photo-1503177119275-0aa32b31d468?w=400&q=80",
+      },
+      {
+        "title": "Egyptian Museum",
+        "duration": "2.0 Hours",
+        "image": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=400&q=80",
+      },
+      {
+        "title": "Cairo Citadel",
+        "duration": "1.5 Hours",
+        "image": "https://images.unsplash.com/photo-1601579112958-4ee055b88231?w=400&q=80",
+      },
+    ];
+
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 110),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeaderImage(context),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTripOverview(),
-                  const SizedBox(height: 18),
-                  const Divider(color: _AppColors.divider, height: 1),
-                  const SizedBox(height: 18),
-                  _buildQuickStats(),
-                  const SizedBox(height: 20),
-                  const Divider(color: _AppColors.divider, height: 1),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Places Included',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: _AppColors.textDark,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildTimeline(),
-                ],
-              ),
-            ),
-          ],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          onPressed: () => Navigator.maybePop(context),
         ),
+        title: const Text(
+          'Itinerary Details',
+          style: TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        centerTitle: true,
       ),
-      bottomNavigationBar: _buildBottomButton(context),
-    );
-  }
-  Widget _buildHeaderImage(BuildContext context) {
-    final double headerHeight = MediaQuery.of(context).size.height * 0.28;
-    return SizedBox(
-      width: double.infinity,
-      height: headerHeight,
-      child: Stack(
-        fit: StackFit.expand,
+      body: Stack(
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(28),
-              bottomRight: Radius.circular(28),
-            ),
-            child: Image.asset(
-              itinerary.coverImageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: Colors.grey.shade300,
-                child: const Icon(Icons.image_not_supported_outlined),
-              ),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(28),
-                bottomRight: Radius.circular(28),
-              ),
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withOpacity(0.4),
-                  Colors.black.withOpacity(0.05),
-                  Colors.transparent,
-                ],
-                stops: const [0.0, 0.5, 1.0],
-              ),
-            ),
-          ),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _circleButton(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onTap: () => Navigator.maybePop(context),
-                    ),
-                    const Text(
-                      'Itinerary Details',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black26,
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
+          // المحتوى القابل للتمرير
+          Positioned.fill(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // 1. الجزء العلوي: الصورة مع زر المفضلة (القلب)
+                  Stack(
+                    children: [
+                      Container(
+                        height: 220,
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage('https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=800&q=80'),
+                            fit: BoxFit.cover,
                           ),
+                        ),
+                      ),
+                      // زر القلب الأبيض أعلى اليمين
+                      Positioned(
+                        top: 16,
+                        right: 20,
+                        child: IconButton(
+                          icon: const Icon(Icons.favorite_border, color: Colors.white, size: 28),
+                          onPressed: () {
+                            // حدث إضافة للمفضلة
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // 2. بطاقة التفاصيل المتداخلة (Overlap Card)
+                  Transform.translate(
+                    offset: const Offset(0, -30),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(28),
+                          topRight: Radius.circular(28),
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // اسم الرحلة الرئيسي
+                          const Text(
+                            'Cairo in One Day',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF212529),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          // النص الفرعي الجديد المضاف في هذه الصورة
+                          Text(
+                            'Explore the best of Cairo in just one day!',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const Divider(color: Colors.black12),
+                          const SizedBox(height: 16),
+
+                          // قسم About This Trip
+                          const Text(
+                            'About This Trip',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF212529),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Discover the most iconic landmarks in Cairo, from the majestic pyramids to the treasures of the Egyptian Museum.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade600,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const Divider(color: Colors.black12),
+                          const SizedBox(height: 16),
+
+                          // قائمة الميزات التوضيحية
+                          _buildFeatureRow(Icons.attach_money_rounded, 'Ticket Price', '500 EGP', accentContainerColor, primaryColor),
+                          const SizedBox(height: 16),
+                          _buildFeatureRow(Icons.access_time_rounded, 'Duration', '1 Day', accentContainerColor, primaryColor),
+                          const SizedBox(height: 16),
+                          _buildFeatureRow(Icons.location_on_outlined, 'Places', '4 Places', accentContainerColor, primaryColor),
+
+                          const SizedBox(height: 24),
+                          const Divider(color: Colors.black12),
+                          const SizedBox(height: 20),
+
+                          // قسم Places Included
+                          const Text(
+                            'Places Included',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF212529),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // عرض الكروت مباشرة بدون خط الـ Timeline الزمني حسب الصورة الجديدة
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: placesItems.length,
+                            itemBuilder: (context, index) {
+                              final item = placesItems[index];
+                              return _buildPlaceCard(
+                                title: item['title']!,
+                                duration: item['duration']!,
+                                imageUrl: item['image']!,
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 80), // مساحة أمان للزر السفلي
                         ],
                       ),
                     ),
-                    _circleButton(
-                      icon: Icons.favorite_border_rounded,
-                      onTap: () {},
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 3. زر الإجراء السفلي الثابت (Sticky Button)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              color: Colors.white,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(26),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.business_center_outlined, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Add to My Trip',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -206,124 +227,31 @@ class ItineraryDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _circleButton({required IconData icon, required VoidCallback onTap}) {
-    return InkWell(
-      onTap: onTap,
-      customBorder: const CircleBorder(),
-      child: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Icon(icon, color: _AppColors.textDark, size: 18),
-      ),
-    );
-  }
-
-  Widget _buildTripOverview() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-      Text(
-      itinerary.title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: _AppColors.textDark,
-      ),
-    ),
-    const SizedBox(height: 6),
-    Text(
-    itinerary.subtitle,style: const TextStyle(fontSize: 13.5, color: _AppColors.textGrey),
-    ),
-        const SizedBox(height: 16),
-        const Text(
-          'About This Trip',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            color: _AppColors.textDark,
-          ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Discover the most iconic landmarks in Cairo, from the majestic '
-              'pyramids to the treasures of the Egyptian Museum.',
-          style: TextStyle(
-            fontSize: 13.5,
-            height: 1.5,
-            color: _AppColors.textGrey,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildQuickStats() {
-    return Column(
-      children: [
-        _statRow(
-          icon: Icons.attach_money_rounded,
-          label: 'Ticket Price',
-          value: itinerary.ticketPrice,
-        ),
-        const SizedBox(height: 14),
-        _statRow(
-          icon: Icons.access_time_rounded,
-          label: 'Duration',
-          value: itinerary.durationLabel,
-        ),
-        const SizedBox(height: 14),
-        _statRow(
-          icon: Icons.location_on_outlined,
-          label: 'Places',
-          value: itinerary.placesCount,
-        ),
-      ],
-    );
-  }
-
-  Widget _statRow({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
+  // ودجت بناء صفوف الميزات (السعر، المدة، المواقع)
+  Widget _buildFeatureRow(IconData icon, String label, String value, Color bgColor, Color iconColor) {
     return Row(
       children: [
         Container(
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: _AppColors.iconBg,
-            borderRadius: BorderRadius.circular(12),
+            color: bgColor,
+            borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: _AppColors.primaryBlue, size: 22),
+          child: Icon(icon, color: iconColor, size: 22),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 12, color: _AppColors.textGrey),
+              style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
             ),
             const SizedBox(height: 2),
             Text(
               value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: _AppColors.textDark,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF212529)),
             ),
           ],
         ),
@@ -331,122 +259,65 @@ class ItineraryDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeline() {
-    return Column(
-      children: List.generate(itinerary.stops.length, (index) {
-        final stop = itinerary.stops[index];
-        final bool isLast = index == itinerary.stops.length - 1;
-        return _buildTimelineRow(stop, isLast);
-      }),
-    );
-  }
-
-  Widget _buildTimelineRow(ItineraryStopModel stop, bool isLast) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 52,
-            child: Text(
-              stop.time,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w600,
-                color: _AppColors.primaryBlue,
-                height: 1.3,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            children: [
-              Container(
-                width: 10,
-                height: 10,
-                margin: const EdgeInsets.only(top: 4),
-                decoration: const BoxDecoration(
-                  color: _AppColors.primaryBlue,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              if (!isLast)
-                Expanded(
-                  child: Container(
-                    width: 2,
-                    color: _AppColors.primaryBlue.withOpacity(0.25),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 14),
-              child: _buildStopCard(stop),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _buildStopCard(ItineraryStopModel stop) {
+  // ودجت مخصصة لبناء الكارت العادي النظيف لكل مزار سياحي بدون الـ Timeline
+  Widget _buildPlaceCard({
+    required String title,
+    required String duration,
+    required String imageUrl,
+  }) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _AppColors.cardBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
       ),
       child: Row(
         children: [
+          // صورة المزار
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              stop.imageUrl,
-              width: 54,
-              height: 54,
+              imageUrl,
+              width: 75,
+              height: 75,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => Container(
-                width: 54,
-                height: 54,
-                color: Colors.grey.shade300,
-                child: const Icon(Icons.image_not_supported_outlined, size: 18),
+                width: 75,
+                height: 75,
+                color: Colors.grey.shade200,
+                child: const Icon(Icons.image, color: Colors.grey),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
+          // تفاصيل المزار السياحي والوقت المتوقع له
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  stop.placeName,
+                  title,
                   style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w600,
-                    color: _AppColors.textDark,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF212529),
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.access_time_rounded,
-                        size: 13, color: _AppColors.textGrey),
+                    Icon(Icons.access_time, size: 14, color: Colors.grey.shade500),
                     const SizedBox(width: 4),
                     Text(
-                      stop.duration,
-                      style: const TextStyle(
+                      duration,
+                      style: TextStyle(
                         fontSize: 12,
-                        color: _AppColors.textGrey,
+                        color: Colors.grey.shade600,
                       ),
                     ),
                   ],
@@ -458,71 +329,4 @@ class ItineraryDetailsScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildBottomButton(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        20,
-        14,
-        20,
-        14 + MediaQuery.of(context).padding.bottom,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 52,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _AppColors.primaryBlue,
-            shape: const StadiumBorder(),
-            elevation: 0,
-          ),
-          onPressed: () {
-            debugPrint('Add to My Trip tapped for ${itinerary.title}');
-          },
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.card_travel_rounded, color: Colors.white, size: 18),
-              SizedBox(width: 8),
-              Text(
-                'Add to My Trip',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ItineraryDetailsApp extends StatelessWidget {
-  const ItineraryDetailsApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, fontFamily: 'Roboto'),
-      home: ItineraryDetailsScreen(itinerary: mockItinerary),
-    );
-  }
-}
-
-void main() {
-  runApp(const ItineraryDetailsApp());
 }

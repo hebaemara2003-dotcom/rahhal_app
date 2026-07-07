@@ -1,7 +1,9 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rahhal_app/model/on_boarding_model.dart';
 import 'package:rahhal_app/onBoarding_screen/custom_button.dart';
+import 'package:rahhal_app/providers/app_language_provider.dart';
 import 'package:rahhal_app/utils/app_assets.dart';
 import 'package:rahhal_app/utils/app_colors.dart';
 import 'package:rahhal_app/utils/app_styles.dart';
@@ -18,6 +20,7 @@ class OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var languageProvider = Provider.of<AppLanguageProvider>(context)!;
     return Scaffold(
         body: Stack(
             children: [

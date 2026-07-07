@@ -23,4 +23,6 @@ class AppAssets {
       'assets/images/pyramids_image.png' ;
   static const String aboEllHoolImage =
       'assets/images/abo_ell_hool.png' ;
+  static const String luxurImage =
+      'assets/images/luxur_image.jpeg' ;
 }

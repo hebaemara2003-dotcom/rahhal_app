@@ -6,9 +6,11 @@ import 'package:rahhal_app/utils/screen_size.dart';
 class ItemProfile extends StatelessWidget {
   String text;
   Widget icon;
+  final VoidCallback onTap;
    ItemProfile({super.key,
   required this.text,
-   required this.icon});
+   required this.icon,
+   required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +48,8 @@ class ItemProfile extends StatelessWidget {
           ),),
           Spacer(),
           IconButton(
-              onPressed: (){
-                //todo: navigator to MyTripsScreen
-              }, icon: Icon(Icons.arrow_forward_ios_outlined,
+              onPressed: onTap
+              , icon: Icon(Icons.arrow_forward_ios_outlined,
           color: AppColors.darkGrayColor,
           size: 18,))
         ],

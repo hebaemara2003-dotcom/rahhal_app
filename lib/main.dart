@@ -2,18 +2,28 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:rahhal_app/home/home_screen.dart';
 import 'package:rahhal_app/onBoarding_screen/onboarding_screen.dart';
+import 'package:rahhal_app/providers/app_language_provider.dart';
 import 'package:rahhal_app/utils/app_routes.dart';
 import 'package:rahhal_app/camera/camera_screen.dart';
 import 'package:app_links/app_links.dart';
+import 'package:provider/provider.dart';
 import 'package:rahhal_app/utils/app_themes.dart';
 
+import 'I10n/app_localizations.dart';
 import 'onBoarding_screen/onboarding_data.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 List<CameraDescription>cameras = [];
 Future <void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
-  runApp(const MyApp());
+  runApp(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create:(context) => AppLanguageProvider(),),
+          ],
+
+      child: MyApp()),
+  );
 }
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -48,6 +58,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
   Widget build(BuildContext context) {
+    var languageProvider = Provider.of<AppLanguageProvider>(context);
     return MaterialApp(
     navigatorKey: navigatorKey,
     debugShowCheckedModeBanner: false,
@@ -56,11 +67,9 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.homeRouteName : (context) => HomeScreen(),
         AppRoutes.onboardingRouteName : (context) => OnboardingScreen(index: 0),
         AppRoutes.cameraRouteName : (context) => CameraScreen(),
-
-
-
-
       } ,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      locale: Locale(languageProvider.appLanguage),
       themeMode: ThemeMode.light,
     );
   }

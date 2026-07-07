@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../api/basket_api.dart';
+import '../model_api/basket/basket_response.dart';
+
 /// ---------------------------------------------------------------------
 /// CENTRALIZED STRINGS (for future localization/multi-language support)
 /// ---------------------------------------------------------------------
@@ -19,22 +22,6 @@ class NewTripStrings {
   static String placesCountLabel(int count) => '$count Places';
 }
 
-/// ---------------------------------------------------------------------
-/// DATA MODEL
-/// ---------------------------------------------------------------------
-class TripPlaceModel {
-  final String name;
-  final String city;
-  final int priceEgp;
-  final String imageUrl;
-
-  const TripPlaceModel({
-    required this.name,
-    required this.city,
-    required this.priceEgp,
-    required this.imageUrl,
-  });
-}
 
 /// ---------------------------------------------------------------------
 /// THEME CONSTANTS
@@ -59,76 +46,73 @@ class NewTripScreen extends StatefulWidget {
 }
 
 class _NewTripScreenState extends State<NewTripScreen> {
-  final List<TripPlaceModel> _places = [
-    const TripPlaceModel(
-      name: 'Great pyramids of Giza',
-      city: 'Giza',
-      priceEgp: 240,
-      imageUrl:
-      'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=200&q=80',
-    ),
-    const TripPlaceModel(
-      name: 'The Great Sphinx',
-      city: 'Giza',
-      priceEgp: 240,
-      imageUrl:
-      'https://images.unsplash.com/photo-1539768942893-daf53e448371?w=200&q=80',
-    ),
-    const TripPlaceModel(
-      name: 'Egyptian Museum',
-      city: 'Cairo',
-      priceEgp: 210,
-      imageUrl:
-      'https://images.unsplash.com/photo-1608731267464-c0c889c2ff02?w=200&q=80',
-    ),
-    const TripPlaceModel(
-      name: 'Cairo Citadel',
-      city: 'Cairo',
-      priceEgp: 180,
-      imageUrl:
-      'https://images.unsplash.com/photo-1572252009286-268acec5ca0a?w=200&q=80',
-    ),
-  ];
 
-  int get _totalCost => _places.fold(0, (sum, place) => sum + place.priceEgp);
+  late Future<BasketResponse> futureBasket;
 
-  void _removePlace(int index) {
-    setState(() => _places.removeAt(index));
+  final service = BasketService();
+  @override
+  void initState() {
+    super.initState();
+    futureBasket = service.getBasket();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _AppColors.pageBackground,
       appBar: _buildAppBar(context),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildBanner(),
-                    const SizedBox(height: 18),
-                    ...List.generate(
-                      _places.length,
-                          (index) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildPlaceCard(_places[index], index),
+      body: FutureBuilder<BasketResponse>(
+          future: futureBasket,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(snapshot.error.toString()),
+              );
+            }
+
+            final basket = snapshot.data!;
+
+            return SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildBanner(basket),
+                          const SizedBox(height: 18),
+                          ...List.generate(
+                            basket.items?.length ?? 0,
+                                (index) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _buildPlaceCard(
+                                basket.items![index],
+                                index,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          _buildSummarySection(basket),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    _buildSummarySection(),
-                  ],
-                ),
+                  ),
+                  _buildBottomButton(basket),
+                ],
               ),
-            ),
-            _buildBottomButton(),
-          ],
-        ),
-      ),
+            );
+          },
+    ),
     );
   }
 
@@ -159,7 +143,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
   // ---------------------------------------------------------------
   // TOP BLUE BANNER
   // ---------------------------------------------------------------
-  Widget _buildBanner() {
+  Widget _buildBanner(BasketResponse basket) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -184,8 +168,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
               ),
               const SizedBox(height: 3),
               Text(
-                NewTripStrings.bannerSubtitle(_places.length),
-                style: const TextStyle(
+                NewTripStrings.bannerSubtitle(basket.numberOfPlaces ?? 0),                style: const TextStyle(
                   fontSize: 12.5,
                   color: Colors.white70,
                 ),
@@ -200,8 +183,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
   // ---------------------------------------------------------------
   // PLACE CARD
   // ---------------------------------------------------------------
-  Widget _buildPlaceCard(TripPlaceModel place, int index) {
-    return Container(
+  Widget _buildPlaceCard(BasketItem place, int index) {    return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -221,7 +203,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              place.imageUrl,
+              "https://implant-liberty-transfer.ngrok-free.dev${place.imageUrl}",
               width: 58,
               height: 58,
               fit: BoxFit.cover,
@@ -239,7 +221,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  place.name,
+                  place.name??"",
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -248,12 +230,12 @@ class _NewTripScreenState extends State<NewTripScreen> {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  place.city,
+                  place.city??"",
                   style: const TextStyle(fontSize: 12.5, color: _AppColors.textGrey),
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '${place.priceEgp} EGP',
+                  '${place.price} EGP',
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -279,7 +261,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
                 constraints: const BoxConstraints(),
                 icon: const Icon(Icons.delete_outline_rounded,
                     color: _AppColors.deleteRed, size: 20),
-                onPressed: () => _removePlace(index),
+                onPressed: () => {},
               ),
             ],
           ),
@@ -291,25 +273,26 @@ class _NewTripScreenState extends State<NewTripScreen> {
   // ---------------------------------------------------------------
   // SUMMARY SECTION
   // ---------------------------------------------------------------
-  Widget _buildSummarySection() {
+  Widget _buildSummarySection(BasketResponse basket) {
     return Column(
       children: [
         _summaryRow(
           icon: Icons.attach_money_rounded,
           title: NewTripStrings.totalCost,
-          value: '$_totalCost EGP',
-        ),
+          value: '${basket.totalCost} EGP',        ),
         const SizedBox(height: 10),
         _summaryRow(
           icon: Icons.access_time_rounded,
           title: NewTripStrings.estimatedDuration,
-          value: NewTripStrings.durationValue,
+  value: '${basket.durationDays} Day',
         ),
         const SizedBox(height: 10),
         _summaryRow(
           icon: Icons.location_on_outlined,
           title: NewTripStrings.numberOfPlaces,
-          value: NewTripStrings.placesCountLabel(_places.length),
+  value: NewTripStrings.placesCountLabel(
+  basket.numberOfPlaces ?? 0,
+  ),
         ),
       ],
     );
@@ -354,7 +337,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
   // ---------------------------------------------------------------
   // BOTTOM BUTTON
   // ---------------------------------------------------------------
-  Widget _buildBottomButton() {
+  Widget _buildBottomButton(BasketResponse basket) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
       decoration: BoxDecoration(
@@ -378,7 +361,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
           ),
           onPressed: () {
             debugPrint(
-              'Generate Trip Plan tapped -> ${_places.length} places, total $_totalCost EGP',
+              'Generate Trip Plan tapped -> ${basket.numberOfPlaces} places, total ${basket.totalCost} EGP',
             );
           },
           child: const Text(

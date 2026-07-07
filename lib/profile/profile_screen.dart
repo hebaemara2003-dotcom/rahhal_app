@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:rahhal_app/favorite/favorite_screen.dart';
+import 'package:rahhal_app/my_trips/my_trips_screen.dart';
 import 'package:rahhal_app/profile/item/item_profile.dart';
+import 'package:rahhal_app/settings/settings_screen.dart';
 import 'package:rahhal_app/utils/app_assets.dart';
 import 'package:rahhal_app/utils/app_colors.dart';
 import 'package:rahhal_app/utils/app_styles.dart';
@@ -153,15 +156,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       ItemProfile(text: 'My Trips',
                         icon: Icon(Icons.location_on_sharp,
-                        color: AppColors.cyanColor,),),
+                        color: AppColors.cyanColor,),
+                        onTap: (){
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(
+                                  builder: (_)=> MyTripsScreen()));
+                        },
+                      ),
                       SizedBox(height: context.height*0.02,),
                       ItemProfile(text: 'Favorite',
                         icon: Icon(Icons.favorite_border_outlined,
-                            color: AppColors.cyanColor),),
+                            color: AppColors.cyanColor),
+                        onTap: (){
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(
+                                  builder: (_)=> FavoriteScreen()));
+                        },),
                       SizedBox(height: context.height*0.02,),
                       ItemProfile(text: 'Settings',
                         icon: Icon(Icons.settings,
-                            color: AppColors.cyanColor),),
+                            color: AppColors.cyanColor),
+                        onTap: (){
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(
+                                  builder: (_)=> SettingsApp()));
+                        }),
 
                       SizedBox(height: context.height*0.02,),
                       Text(

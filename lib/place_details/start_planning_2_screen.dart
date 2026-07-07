@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rahhal_app/place_details/start_planning_3_screen.dart';
 
 /// ---------------------------------------------------------------------
 /// THEME CONSTANTS
@@ -20,13 +21,24 @@ class _AppColors {
 /// ---------------------------------------------------------------------
 /// SCREEN
 /// ---------------------------------------------------------------------
-class StartPlanningInterestsScreen extends StatefulWidget {
-  const StartPlanningInterestsScreen({super.key});
+  class StartPlanningInterestsScreen extends StatefulWidget {
+  final String city;
+  final String duration;
+  final String travelers;
+
+  const StartPlanningInterestsScreen({
+  super.key,
+  required this.city,
+  required this.duration,
+  required this.travelers,
+  });
 
   @override
   State<StartPlanningInterestsScreen> createState() =>
-      _StartPlanningInterestsScreenState();
-}
+  _StartPlanningInterestsScreenState();
+  }
+
+
 
 class _StartPlanningInterestsScreenState
     extends State<StartPlanningInterestsScreen> {
@@ -293,7 +305,18 @@ class _StartPlanningInterestsScreenState
           elevation: 0,
         ),
         onPressed: () {
-          // TODO: Hook up navigation to the next planning step
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => RecommendedPlacesScreen(
+                city: widget.city,
+                duration: widget.duration,
+                travelers: widget.travelers,
+                interests: _selectedInterests.toList(),
+                budget: _budgetValue,
+              ),
+            ),
+          );
           debugPrint(
             'Next tapped -> interests: $_selectedInterests, budget: ${_budgetValue.round()} EGP',
           );
@@ -329,11 +352,8 @@ class StartPlanningInterestsApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, fontFamily: 'Roboto'),
-      home: const StartPlanningInterestsScreen(),
+      // home: const StartPlanningInterestsScreen(),
     );
   }
 }
 
-void main() {
-  runApp(const StartPlanningInterestsApp());
-}

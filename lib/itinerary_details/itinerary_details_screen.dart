@@ -1,8 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:rahhal_app/place_details/new_trip_screen.dart';
+import 'package:rahhal_app/utils/app_assets.dart';
+import 'package:rahhal_app/utils/screen_size.dart';
 
-class ItineraryDetailsScreen extends StatelessWidget {
-  const ItineraryDetailsScreen({super.key, required int tripId});
+import '../api/itinerary_details_api.dart';
+import '../model_api/itnerary_details/itnerary_details_response.dart';
 
+  class ItineraryDetailsScreen extends StatefulWidget {
+  final int tripId;
+
+  const ItineraryDetailsScreen({
+  super.key,
+  required this.tripId,
+  });
+
+  @override
+  State<ItineraryDetailsScreen> createState() =>
+  _ItineraryDetailsScreenState();
+  }
+
+class _ItineraryDetailsScreenState extends State<ItineraryDetailsScreen> {
+
+  ItneraryDetailsResponse? trip;
+  @override
+  @override
+  void initState() {
+    super.initState();
+    loadTrip();
+  }
+
+  Future<void> loadTrip() async {
+    print("Trip Id = ${widget.tripId}");
+
+    trip = await getTripDetails(widget.tripId);
+
+    print(trip);
+
+    setState(() {});
+  }
   @override
   Widget build(BuildContext context) {
     // الألوان المعتمدة من التصميم
@@ -10,29 +45,13 @@ class ItineraryDetailsScreen extends StatelessWidget {
     const accentContainerColor = Color(0xFFE7F1FF); // خلفية أيقونات الميزات الخفيفة
     const backgroundColor = Color(0xFFF8F9FA); // خلفية التطبيق الهادئة
 
-    // قائمة الأماكن السياحية المكتوبة في الصورة بدون الـ Timeline المزال
-    final placesItems = [
-      {
-        "title": "Great pyramids of Giza",
-        "duration": "2.0 Hours",
-        "image": "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=400&q=80",
-      },
-      {
-        "title": "The Great Sphinx",
-        "duration": "1.5 Hours",
-        "image": "https://images.unsplash.com/photo-1503177119275-0aa32b31d468?w=400&q=80",
-      },
-      {
-        "title": "Egyptian Museum",
-        "duration": "2.0 Hours",
-        "image": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=400&q=80",
-      },
-      {
-        "title": "Cairo Citadel",
-        "duration": "1.5 Hours",
-        "image": "https://images.unsplash.com/photo-1601579112958-4ee055b88231?w=400&q=80",
-      },
-    ];
+    if (trip == null) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -62,12 +81,9 @@ class ItineraryDetailsScreen extends StatelessWidget {
                       Container(
                         height: 220,
                         width: double.infinity,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage('https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=800&q=80'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                        child: Image.asset(AppAssets.generalImage,
+                        width: context.width*.3,
+                        height: context.height*.15,),
                       ),
                       // زر القلب الأبيض أعلى اليمين
                       Positioned(
@@ -100,56 +116,48 @@ class ItineraryDetailsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // اسم الرحلة الرئيسي
-                          const Text(
-                            'Cairo in One Day',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF212529),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          // النص الفرعي الجديد المضاف في هذه الصورة
-                          Text(
-                            'Explore the best of Cairo in just one day!',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          const Divider(color: Colors.black12),
-                          const SizedBox(height: 16),
+                        Text(
+                        trip!.tripName ?? "",
+    style: const TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: Color(0xFF212529),
+    ),
 
-                          // قسم About This Trip
-                          const Text(
-                            'About This Trip',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF212529),
-                            ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Discover the most iconic landmarks in Cairo, from the majestic pyramids to the treasures of the Egyptian Museum.',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey.shade600,
-                              height: 1.5,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
+
+                          const SizedBox(height: 6),
                           const Divider(color: Colors.black12),
-                          const SizedBox(height: 16),
+
+
+                          const SizedBox(height: 8),
+
+
 
                           // قائمة الميزات التوضيحية
-                          _buildFeatureRow(Icons.attach_money_rounded, 'Ticket Price', '500 EGP', accentContainerColor, primaryColor),
+                          _buildFeatureRow(
+                            Icons.attach_money_rounded,
+                            'Ticket Price',
+                            "${trip!.totalBudget} EGP",
+                            accentContainerColor,
+                            primaryColor,
+                          ),
                           const SizedBox(height: 16),
-                          _buildFeatureRow(Icons.access_time_rounded, 'Duration', '1 Day', accentContainerColor, primaryColor),
+                          _buildFeatureRow(
+                            Icons.access_time_rounded,
+                            'Duration',
+                            "${trip!.durationDays} Days",
+                            accentContainerColor,
+                            primaryColor,
+                          ),
                           const SizedBox(height: 16),
-                          _buildFeatureRow(Icons.location_on_outlined, 'Places', '4 Places', accentContainerColor, primaryColor),
-
+                          _buildFeatureRow(
+                            Icons.location_on_outlined,
+                            'Places',
+                            "${trip!.placesCount} Places",
+                            accentContainerColor,
+                            primaryColor,
+                          ),
                           const SizedBox(height: 24),
                           const Divider(color: Colors.black12),
                           const SizedBox(height: 20),
@@ -169,13 +177,15 @@ class ItineraryDetailsScreen extends StatelessWidget {
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: placesItems.length,
+                            itemCount: trip!.tripPlaces?.length ?? 0,
                             itemBuilder: (context, index) {
-                              final item = placesItems[index];
+                              final item = trip!.tripPlaces![index];
+
                               return _buildPlaceCard(
-                                title: item['title']!,
-                                duration: item['duration']!,
-                                imageUrl: item['image']!,
+                                title: item.place?.name ?? "Unknown Place",
+                                duration:
+                                "${item.startTime ?? ""} - ${item.endTime ?? ""}",
+                                imageUrl: item.place?.mainImageUrl ?? "",
                               );
                             },
                           ),
@@ -198,7 +208,11 @@ class ItineraryDetailsScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
               color: Colors.white,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_)=>
+                      NewTripScreen()));
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   foregroundColor: Colors.white,

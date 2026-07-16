@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:rahhal_app/camera/camera_screen.dart';
 import 'package:rahhal_app/model_api/image_recognition/image_recognition_response.dart';
 import 'package:rahhal_app/onBoarding_screen/custom_button.dart';
+import 'package:rahhal_app/place_details/place_details_screen.dart';
 import 'package:rahhal_app/utils/app_assets.dart';
 import 'package:rahhal_app/utils/app_styles.dart';
 import 'package:rahhal_app/utils/screen_size.dart';
@@ -165,19 +167,32 @@ class RecognitionResultScreen extends StatelessWidget {
             ),
 
              SizedBox(height: context.height*0.03),
-             CustomButton(
-                 onPressed: (){
-                   //todo:
-                 }, 
-                 borderRadius: BorderRadius.circular(50),
-                 child: Text("view Details",
-                 style: AppStyles.nunito16White,)),
+            CustomButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PlaceDetailScreen(
+                      placeId: result.placeDetails!.id!,
+                    ),
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(50),
+              child: Text(
+                "View Details",
+                style: AppStyles.nunito16White,
+              ),
+            ),
 
 
              SizedBox(height: context.height*0.02),
 
         CustomButton(
           onPressed: (){
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_)=>
+                CameraScreen()));
 
         },
           borderRadius: BorderRadius.circular(44),

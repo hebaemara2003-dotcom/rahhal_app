@@ -239,7 +239,8 @@ class _HomeTabState extends State<HomeTab> {
               itemBuilder: (context, index) {
               var place = places[index];
                 return PlaceCard(
-                  place: places[index],
+                  place: place,
+                    placeId:place["id"],
                 );
               },
           )

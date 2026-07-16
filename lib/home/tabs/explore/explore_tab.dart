@@ -101,11 +101,14 @@ class _ExploreTapState extends State<ExploreTap> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 0.62,
+                  childAspectRatio: 0.55,
                 ),
                 itemBuilder: (context, index) {
+                  var place = places[index];
+
                   return PlaceCard(
-                    place: places[index],
+                    place: place,
+                    placeId: place["id"],
                   );
                 },
               ),

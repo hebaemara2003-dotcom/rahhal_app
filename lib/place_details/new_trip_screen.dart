@@ -381,19 +381,6 @@ class _NewTripScreenState extends State<NewTripScreen> {
 /// ---------------------------------------------------------------------
 /// ENTRY POINT (for standalone preview / testing)
 /// ---------------------------------------------------------------------
-class NewTripApp extends StatelessWidget {
-  const NewTripApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, fontFamily: 'Roboto'),
-      home: const NewTripScreen(),
-    );
-  }
-}
 
-void main() {
-  runApp(const NewTripApp());
-}
+

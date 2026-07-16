@@ -25,4 +25,6 @@ class AppAssets {
       'assets/images/abo_ell_hool.png' ;
   static const String luxurImage =
       'assets/images/luxur_image.jpeg' ;
+  static const String generalImage =
+      'assets/images/general_image.jpeg' ;
 }
